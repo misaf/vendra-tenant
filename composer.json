@@ -1,0 +1,69 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "misaf/vendra-tenant",
+    "description": "Multi-tenancy management system with isolated data and configuration per tenant",
+    "type": "vendra-module",
+    "license": "MIT",
+    "version": "12.0.0",
+    "keywords": [
+        "laravel",
+        "filamentphp",
+        "tenant"
+    ],
+    "authors": [
+        {
+            "name": "Ehsan Mahmoodi",
+            "email": "misaf.1990@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "filament/filament": "^4.0",
+        "staudenmeir/eloquent-has-many-deep": "^1.20.7",
+        "staudenmeir/belongs-to-through": "^2.16.4",
+        "spatie/laravel-activitylog": "^4.10.2",
+        "spatie/laravel-sluggable": "^3.7.5",
+        "spatie/laravel-multitenancy": "^4.0.5"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.24.1",
+        "larastan/larastan": "^3.9.1",
+        "laravel/boost": "^2.0.6",
+        "laravel/pint": "^1.27",
+        "mockery/mockery": "^1.6.12",
+        "nunomaduro/collision": "^8.8.3",
+        "pestphp/pest": "^4.3.1",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "orchestra/testbench": "^10.0"
+    },
+    "scripts": {
+        "analyse": "vendor/bin/phpstan analyse",
+        "test": "pest"
+    },
+    "autoload": {
+        "psr-4": {
+            "Misaf\\VendraTenant\\": "src/",
+            "Misaf\\VendraTenant\\Tests\\": "tests/",
+            "Misaf\\VendraTenant\\Database\\Factories\\": "database/factories/",
+            "Misaf\\VendraTenant\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Misaf\\VendraTenant\\Providers\\TenantServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
