@@ -12,4 +12,13 @@ final class TenantServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/multitenancy.php', 'multitenancy');
     }
+
+    public function boot(): void
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'multitenancy');
+
+        $this->publishes([
+            __DIR__ . '/../../resources/lang' => $this->app->langPath('vendor/multitenancy'),
+        ], 'multitenancy-lang');
+    }
 }
