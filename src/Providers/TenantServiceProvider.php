@@ -4,21 +4,41 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Filament\Panel;
+use Illuminate\Foundation\Console\AboutCommand;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-final class TenantServiceProvider extends ServiceProvider
+final class TenantServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/multitenancy.php', 'multitenancy');
+        $package
+            ->name('vendra-tenant')
+            ->hasConfigFile()
+            ->hasTranslations()
+            ->hasMigrations([
+                'create_tenants_table'
+            ])
+            ->hasInstallCommand(function (InstallCommand $command): void {
+                $command->askToStarRepoOnGitHub('misaf/vendra-tenant');
+            });
     }
 
-    public function boot(): void
+    public function packageRegistered(): void
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../../resources/lang', 'multitenancy');
+        Panel::configureUsing(function (Panel $panel): void {
+            if ('admin' !== $panel->getId()) {
+                return;
+            }
 
-        $this->publishes([
-            __DIR__ . '/../../resources/lang' => $this->app->langPath('vendor/multitenancy'),
-        ], 'multitenancy-lang');
+            // $panel->plugin(TenantPlugin::make());
+        });
+    }
+
+    public function packageBooted(): void
+    {
+        AboutCommand::add('Vendra Tenant', fn() => ['Version' => 'dev-master']);
     }
 }
