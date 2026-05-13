@@ -4,7 +4,6 @@
     "description": "Multi-tenancy management system with isolated data and configuration per tenant",
     "type": "vendra-module",
     "license": "MIT",
-    "version": "12.0.0",
     "keywords": [
         "laravel",
         "filamentphp",
@@ -27,13 +26,13 @@
         "spatie/laravel-package-tools": "^1.0"
     },
     "require-dev": {
-        "fakerphp/faker": "^1.24.1",
-        "larastan/larastan": "^3.9.1",
-        "laravel/boost": "^2.0.6",
-        "laravel/pint": "^1.27",
-        "mockery/mockery": "^1.6.12",
-        "nunomaduro/collision": "^8.8.3",
-        "pestphp/pest": "^4.3.1",
+        "fakerphp/faker": "^1.0",
+        "larastan/larastan": "^3.0",
+        "laravel/boost": "^2.0",
+        "laravel/pint": "^1.0",
+        "mockery/mockery": "^1.0",
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
         "orchestra/testbench": "^10.0"
     },
