@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,14 +16,15 @@ use Misaf\Geographical\Models\GeographicalCountry;
 use Misaf\Geographical\Models\GeographicalNeighborhood;
 use Misaf\Geographical\Models\GeographicalState;
 use Misaf\Geographical\Models\GeographicalZone;
+use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraCurrency\Models\CurrencyCategory;
 use Misaf\VendraCurrency\Traits\HasCurrency as CurrencyTrait;
 use Misaf\VendraCustomPage\Models\Page;
 use Misaf\VendraCustomPage\Models\PageCategory;
 use Misaf\VendraFaq\Models\Faq;
 use Misaf\VendraFaq\Models\FaqCategory;
-use Misaf\VendraMultilang\Models\Language;
-use Misaf\VendraMultilang\Models\LanguageLine;
+use Misaf\VendraLanguage\Models\Language;
+use Misaf\VendraLanguage\Models\LanguageLine;
 use Misaf\VendraPermission\Models\Permission;
 use Misaf\VendraPermission\Models\Role;
 use Misaf\VendraTenant\Database\Factories\TenantFactory;
@@ -32,7 +34,6 @@ use Misaf\VendraUser\Traits\HasUserProfile as UserProfileTrait;
 use Misaf\VendraUser\Traits\HasUserProfileBalance as UserProfileBalanceTrait;
 use Misaf\VendraUser\Traits\HasUserProfileDocument as UserProfileDocumentTrait;
 use Misaf\VendraUser\Traits\HasUserProfilePhone as UserProfilePhoneTrait;
-use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 use Spatie\Sluggable\SlugOptions;
@@ -50,8 +51,10 @@ use Znck\Eloquent\Traits\BelongsToThrough as TraitBelongsToThrough;
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
+#[Fillable(['name', 'description', 'slug', 'status'])]
 final class Tenant extends SpatieTenant
 {
+    use HasDefaultActivityLogOptions;
     // use CurrencyTrait;
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
@@ -76,20 +79,19 @@ final class Tenant extends SpatieTenant
         return TenantFactory::new();
     }
 
-    protected $casts = [
-        'id'          => 'integer',
-        'name'        => 'string',
-        'description' => 'string',
-        'slug'        => 'string',
-        'status'      => 'boolean',
-    ];
-
-    protected $fillable = [
-        'name',
-        'description',
-        'slug',
-        'status',
-    ];
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'id'          => 'integer',
+            'name'        => 'string',
+            'description' => 'string',
+            'slug'        => 'string',
+            'status'      => 'boolean',
+        ];
+    }
 
     /**
      * @param Builder<Tenant> $query
@@ -248,10 +250,5 @@ final class Tenant extends SpatieTenant
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug')
             ->preventOverwrite();
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()->logFillable()->logExcept(['id']);
     }
 }
