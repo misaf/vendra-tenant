@@ -1,72 +1,72 @@
 {
-    "$schema": "https://getcomposer.org/schema.json",
-    "name": "misaf/vendra-tenant",
-    "description": "Multi-tenancy management system with isolated data and configuration per tenant",
-    "type": "vendra-module",
-    "license": "MIT",
-    "keywords": [
-        "laravel",
-        "filamentphp",
-        "tenant"
-    ],
-    "authors": [
-        {
-            "name": "Ehsan Mahmoodi",
-            "email": "misaf.1990@gmail.com"
-        }
-    ],
-    "require": {
-        "filament/filament": "^5.0",
-        "misaf/vendra-activity-log": "dev-master",
-        "php": "^8.3",
-        "spatie/laravel-activitylog": "^4.0",
+	"name": "misaf/vendra-tenant",
+	"description": "Multi-tenancy management system with isolated data and configuration per tenant",
+	"license": "MIT",
+	"type": "vendra-module",
+	"keywords": [
+		"laravel",
+		"filamentphp",
+		"tenant"
+	],
+	"authors": [
+		{
+			"name": "Ehsan Mahmoodi",
+			"email": "misaf.1990@gmail.com"
+		}
+	],
+	"require": {
+		"php": "^8.3",
+		"filament/filament": "^5.0",
 		"illuminate/support": "^12.0 || ^13.0",
+		"misaf/vendra-activity-log": "dev-master",
 		"misaf/vendra-support": "dev-master",
-        "spatie/laravel-multitenancy": "^4.0.5",
-        "spatie/laravel-package-tools": "^1.0",
-        "spatie/laravel-sluggable": "^4.0",
-        "staudenmeir/belongs-to-through": "^2.0",
-        "staudenmeir/eloquent-has-many-deep": "^1.0"
-    },
-    "require-dev": {
-        "fakerphp/faker": "^1.0",
-        "larastan/larastan": "^3.0",
-        "laravel/boost": "^2.0",
-        "laravel/pint": "^1.0",
-        "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^8.0",
-        "pestphp/pest": "^4.0",
-        "pestphp/pest-plugin-laravel": "^4.0",
-        "orchestra/testbench": "^10.0"
-    },
-    "scripts": {
-        "analyse": "vendor/bin/phpstan analyse",
-        "test": "pest"
-    },
-    "autoload": {
-        "psr-4": {
-            "Misaf\\VendraTenant\\": "src/",
-            "Misaf\\VendraTenant\\Tests\\": "tests/",
-            "Misaf\\VendraTenant\\Database\\Factories\\": "database/factories/",
-            "Misaf\\VendraTenant\\Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Misaf\\VendraTenant\\Providers\\TenantServiceProvider"
-            ]
-        }
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+		"spatie/laravel-activitylog": "^4.0",
+		"spatie/laravel-multitenancy": "^4.0.5",
+		"spatie/laravel-package-tools": "^1.0",
+		"spatie/laravel-sluggable": "^4.0",
+		"staudenmeir/belongs-to-through": "^2.0",
+		"staudenmeir/eloquent-has-many-deep": "^1.0"
+	},
+	"require-dev": {
+		"fakerphp/faker": "^1.0",
+		"larastan/larastan": "^3.0",
+		"laravel/boost": "^2.0",
+		"laravel/pint": "^1.0",
+		"mockery/mockery": "^1.0",
+		"nunomaduro/collision": "^8.0",
+		"orchestra/testbench": "^10.0",
+		"pestphp/pest": "^4.0",
+		"pestphp/pest-plugin-laravel": "^4.0"
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true,
+	"autoload": {
+		"psr-4": {
+			"Misaf\\VendraTenant\\": "src/",
+			"Misaf\\VendraTenant\\Database\\Factories\\": "database/factories/",
+			"Misaf\\VendraTenant\\Database\\Seeders\\": "database/seeders/",
+			"Misaf\\VendraTenant\\Tests\\": "tests/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"pestphp/pest-plugin": true,
+			"php-http/discovery": true
+		},
+		"optimize-autoloader": true,
+		"preferred-install": "dist",
+		"sort-packages": true
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Misaf\\VendraTenant\\Providers\\TenantServiceProvider"
+			]
+		}
+	},
+	"scripts": {
+		"analyse": "vendor/bin/phpstan analyse",
+		"test": "pest"
+	},
+	"$schema": "https://getcomposer.org/schema.json"
 }
