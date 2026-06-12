@@ -53,18 +53,18 @@ final class ProvisionTenantAction
             ]);
 
             $user = $this->createUserAction->execute(
-                $tenant,
-                $data['username'],
-                $data['email'],
-                $data['password'],
-                $isVerified,
+                tenant: $tenant,
+                username: $data['username'],
+                email: $data['email'],
+                password: $data['password'],
+                isVerified: $isVerified,
             );
 
             $role = $this->createRoleAction->execute(
-                $tenant,
-                $data['role'],
-                $data['role_description'],
-                $data['guard'],
+                tenant: $tenant,
+                name: $data['role'],
+                description: $data['role_description'],
+                guardName: $data['guard'],
             );
 
             $user->assignRole($role);
