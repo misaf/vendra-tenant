@@ -6,8 +6,6 @@ namespace Misaf\VendraTenant\Console\Commands;
 
 use Misaf\VendraSupport\Console\Commands\BaseSeedCommand;
 use Misaf\VendraTenant\Database\Seeders\DemoContentSeeder;
-use Misaf\VendraTenant\Database\Seeders\PermissionPolicySeeder;
-use Misaf\VendraTenant\TaggerPlugin;
 use Misaf\VendraTenant\TenantPlugin;
 
 final class SeedCommand extends BaseSeedCommand
