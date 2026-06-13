@@ -37,7 +37,6 @@ final class ProvisionTenantAction
      */
     public function execute(array $data, bool $isEnabled, bool $isVerified): array
     {
-        return DB::transaction(function () use ($data, $isEnabled, $isVerified): array {
             $tenant = Tenant::query()->create([
                 'name'        => $data['name'],
                 'description' => $data['description'],
@@ -74,6 +73,5 @@ final class ProvisionTenantAction
                 'user'   => $user,
                 'role'   => $role,
             ];
-        });
     }
 }
