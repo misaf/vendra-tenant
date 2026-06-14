@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Database\Factories;
 
+use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Misaf\VendraTenant\Models\Tenant;
@@ -11,13 +12,9 @@ use Misaf\VendraTenant\Models\Tenant;
 /**
  * @extends Factory<Tenant>
  */
+#[UseModel(Tenant::class)]
 final class TenantFactory extends Factory
 {
-    /**
-     * @var class-string<Tenant>
-     */
-    protected $model = Tenant::class;
-
     /**
      * @return array<string, mixed>
      */
