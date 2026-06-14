@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraTenant\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,20 +14,13 @@ use Illuminate\Support\Carbon;
 use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraCurrency\Models\CurrencyCategory;
-use Misaf\VendraCurrency\Traits\HasCurrency as CurrencyTrait;
 use Misaf\VendraFaq\Models\Faq;
 use Misaf\VendraFaq\Models\FaqCategory;
 use Misaf\VendraLanguage\Models\Language;
-use Misaf\VendraLanguage\Models\LanguageLine;
 use Misaf\VendraPermission\Models\Permission;
 use Misaf\VendraPermission\Models\Role;
 use Misaf\VendraTenant\Database\Factories\TenantFactory;
 use Misaf\VendraTransaction\Models\TransactionGateway;
-use Misaf\VendraTransaction\Traits\HasTransaction;
-use Misaf\VendraUser\Traits\HasUserProfile as UserProfileTrait;
-use Misaf\VendraUser\Traits\HasUserProfileBalance as UserProfileBalanceTrait;
-use Misaf\VendraUser\Traits\HasUserProfileDocument as UserProfileDocumentTrait;
-use Misaf\VendraUser\Traits\HasUserProfilePhone as UserProfilePhoneTrait;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 use Spatie\Sluggable\SlugOptions;
@@ -45,32 +39,17 @@ use Znck\Eloquent\Traits\BelongsToThrough as TraitBelongsToThrough;
  * @property Carbon|null $deleted_at
  */
 #[Fillable(['name', 'description', 'slug', 'status'])]
+#[UseFactory(TenantFactory::class)]
 final class Tenant extends SpatieTenant
 {
     use HasDefaultActivityLogOptions;
-    // use CurrencyTrait;
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
     use HasFeatures;
     use HasRelationships;
-    // use HasTransaction;
     use LogsActivity;
     use SoftDeletes;
     use TraitBelongsToThrough;
-    // use UserProfileBalanceTrait;
-    // use UserProfileDocumentTrait;
-    // use UserProfilePhoneTrait;
-    // use UserProfileTrait;
-
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
-     */
-    protected static function newFactory()
-    {
-        return TenantFactory::new();
-    }
 
     /**
      * @return array<string, string>
@@ -128,9 +107,7 @@ final class Tenant extends SpatieTenant
         return $this->hasMany(Faq::class);
     }
 
-    // public function languageLines(): HasMany
     // {
-    //     return $this->hasMany(LanguageLine::class);
     // }
 
     /**
