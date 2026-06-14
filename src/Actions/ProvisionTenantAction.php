@@ -34,11 +34,13 @@ final class ProvisionTenantAction
     {
         $tenant = Tenant::query()->create([
             'name'   => $data['name'],
+            'slug'   => $data['name'],
             'status' => $isEnabled,
         ]);
 
         $tenant->tenantDomains()->create([
             'name'   => $data['domain'],
+            'slug'   => $data['domain'],
             'status' => $isEnabled,
         ]);
 
