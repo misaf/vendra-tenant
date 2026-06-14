@@ -21,15 +21,11 @@ final class ProvisionTenantAction
      * @param array{
      *     name: string,
      *     description: string|null,
-     *     slug: string,
      *     domain: string,
-     *     domain_description: string|null,
-     *     domain_slug: string,
      *     username: string,
      *     email: string,
      *     password: string,
      *     role: string,
-     *     role_description: string|null,
      *     guard: string
      * } $data
      * @return array{tenant: Tenant, user: User, role: Role}
@@ -37,15 +33,13 @@ final class ProvisionTenantAction
     public function execute(array $data, bool $isEnabled, bool $isVerified): array
     {
         $tenant = Tenant::query()->create([
-            'name'        => $data['name'],
-            'slug'        => $data['slug'],
-            'status'      => $isEnabled,
+            'name'   => $data['name'],
+            'status' => $isEnabled,
         ]);
 
         $tenant->tenantDomains()->create([
-            'name'        => $data['domain'],
-            'slug'        => $data['domain_slug'],
-            'status'      => $isEnabled,
+            'name'   => $data['domain'],
+            'status' => $isEnabled,
         ]);
 
         $user = $this->createUserAction->execute(
