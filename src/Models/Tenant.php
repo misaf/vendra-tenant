@@ -11,16 +11,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Laravel\Pennant\Concerns\HasFeatures;
-use Misaf\Geographical\Models\GeographicalCity;
-use Misaf\Geographical\Models\GeographicalCountry;
-use Misaf\Geographical\Models\GeographicalNeighborhood;
-use Misaf\Geographical\Models\GeographicalState;
-use Misaf\Geographical\Models\GeographicalZone;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraCurrency\Models\CurrencyCategory;
 use Misaf\VendraCurrency\Traits\HasCurrency as CurrencyTrait;
-use Misaf\VendraCustomPage\Models\Page;
-use Misaf\VendraCustomPage\Models\PageCategory;
 use Misaf\VendraFaq\Models\Faq;
 use Misaf\VendraFaq\Models\FaqCategory;
 use Misaf\VendraLanguage\Models\Language;
@@ -135,46 +128,6 @@ final class Tenant extends SpatieTenant
         return $this->hasMany(Faq::class);
     }
 
-    /**
-     * @return HasMany<GeographicalCity, $this>
-     */
-    public function geographicalCities(): HasMany
-    {
-        return $this->hasMany(GeographicalCity::class);
-    }
-
-    /**
-     * @return HasMany<GeographicalCountry, $this>
-     */
-    public function geographicalCountries(): HasMany
-    {
-        return $this->hasMany(GeographicalCountry::class);
-    }
-
-    /**
-     * @return HasMany<GeographicalNeighborhood, $this>
-     */
-    public function geographicalNeighborhoods(): HasMany
-    {
-        return $this->hasMany(GeographicalNeighborhood::class);
-    }
-
-    /**
-     * @return HasMany<GeographicalState, $this>
-     */
-    public function geographicalStates(): HasMany
-    {
-        return $this->hasMany(GeographicalState::class);
-    }
-
-    /**
-     * @return HasMany<GeographicalZone, $this>
-     */
-    public function geographicalZones(): HasMany
-    {
-        return $this->hasMany(GeographicalZone::class);
-    }
-
     // public function languageLines(): HasMany
     // {
     //     return $this->hasMany(LanguageLine::class);
@@ -186,22 +139,6 @@ final class Tenant extends SpatieTenant
     public function languages(): HasMany
     {
         return $this->hasMany(Language::class);
-    }
-
-    /**
-     * @return HasMany<PageCategory, $this>
-     */
-    public function pageCategories(): HasMany
-    {
-        return $this->hasMany(PageCategory::class);
-    }
-
-    /**
-     * @return HasMany<Page, $this>
-     */
-    public function pages(): HasMany
-    {
-        return $this->hasMany(Page::class);
     }
 
     /**
