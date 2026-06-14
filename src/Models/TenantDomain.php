@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraTenant\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +28,7 @@ use Spatie\Sluggable\SlugOptions;
  * @property Carbon|null $deleted_at
  */
 #[Fillable(['name', 'description', 'slug', 'status'])]
+#[UseFactory(TenantDomainFactory::class)]
 final class TenantDomain extends Model
 {
     use BelongsToTenant;
