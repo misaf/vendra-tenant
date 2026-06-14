@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Actions;
 
-use Illuminate\Support\Facades\DB;
 use Misaf\VendraPermission\Actions\CreateRoleAction;
 use Misaf\VendraPermission\Models\Role;
 use Misaf\VendraTenant\Models\Tenant;
@@ -37,41 +36,38 @@ final class ProvisionTenantAction
      */
     public function execute(array $data, bool $isEnabled, bool $isVerified): array
     {
-            $tenant = Tenant::query()->create([
-                'name'        => $data['name'],
-                'description' => $data['description'],
-                'slug'        => $data['slug'],
-                'status'      => $isEnabled,
-            ]);
+        $tenant = Tenant::query()->create([
+            'name'        => $data['name'],
+            'slug'        => $data['slug'],
+            'status'      => $isEnabled,
+        ]);
 
-            $tenant->tenantDomains()->create([
-                'name'        => $data['domain'],
-                'description' => $data['domain_description'],
-                'slug'        => $data['domain_slug'],
-                'status'      => $isEnabled,
-            ]);
+        $tenant->tenantDomains()->create([
+            'name'        => $data['domain'],
+            'slug'        => $data['domain_slug'],
+            'status'      => $isEnabled,
+        ]);
 
-            $user = $this->createUserAction->execute(
-                tenant: $tenant,
-                username: $data['username'],
-                email: $data['email'],
-                password: $data['password'],
-                isVerified: $isVerified,
-            );
+        $user = $this->createUserAction->execute(
+            tenant: $tenant,
+            username: $data['username'],
+            email: $data['email'],
+            password: $data['password'],
+            isVerified: $isVerified,
+        );
 
-            $role = $this->createRoleAction->execute(
-                tenant: $tenant,
-                name: $data['role'],
-                description: $data['role_description'],
-                guardName: $data['guard'],
-            );
+        $role = $this->createRoleAction->execute(
+            tenant: $tenant,
+            name: $data['role'],
+            guardName: $data['guard'],
+        );
 
-            $user->assignRole($role);
+        $user->assignRole($role);
 
-            return [
-                'tenant' => $tenant,
-                'user'   => $user,
-                'role'   => $role,
-            ];
+        return [
+            'tenant' => $tenant,
+            'user'   => $user,
+            'role'   => $role,
+        ];
     }
 }
