@@ -8,7 +8,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Misaf\VendraTenant\Actions\ProvisionTenantAction;
 
@@ -20,9 +19,7 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
         {username : Username for the tenant owner}
         {email : Email address for the tenant owner}
         {--description= : Tenant description}
-        {--slug= : Tenant slug}
         {--domain-description= : Tenant domain description}
-        {--domain-slug= : Tenant domain slug}
         {--password= : Password for the tenant owner}
         {--role= : Default role name to create and assign}
         {--role-description= : Default role description}
@@ -73,34 +70,24 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
     /**
      * @return array{
      *     name: string,
-     *     description: string|null,
-     *     slug: string,
      *     domain: string,
-     *     domain_description: string|null,
-     *     domain_slug: string,
      *     username: string,
      *     email: string,
      *     password: string,
      *     role: string,
-     *     role_description: string|null,
      *     guard: string
      * }|null
      */
     private function validatedInput(): ?array
     {
         $input = [
-            'name'               => $this->argument('name'),
-            'domain'             => $this->argument('domain'),
-            'description'        => $this->option('description'),
-            'domain_description' => $this->option('domain-description'),
-            'username'           => $this->argument('username'),
-            'email'              => $this->argument('email'),
-            'role_description'   => $this->option('role-description'),
-            'role'               => $this->option('role'),
-            'guard'              => $this->option('guard'),
-            'password'           => $this->option('password'),
-            'slug'               => $this->option('slug'),
-            'domain_slug'        => $this->option('domain-slug'),
+            'name'     => $this->argument('name'),
+            'domain'   => $this->argument('domain'),
+            'username' => $this->argument('username'),
+            'email'    => $this->argument('email'),
+            'role'     => $this->option('role'),
+            'guard'    => $this->option('guard'),
+            'password' => $this->option('password'),
         ];
 
         if (blank($input['role'])) {
@@ -115,27 +102,19 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             $input['password'] = $this->input->isInteractive() ? $this->secret('Password') : null;
         }
 
-        $input['slug'] = Str::slug((string) (filled($input['slug']) ? $input['slug'] : $input['name']));
-        $input['domain_slug'] = Str::slug((string) (filled($input['domain_slug']) ? $input['domain_slug'] : $input['domain']));
-
         $validator = Validator::make($input, [
-            'name'               => ['required', 'string', 'max:255'],
-            'description'        => ['nullable', 'string'],
-            'slug'               => ['required', 'string', 'max:255', Rule::unique('tenants', 'slug')->withoutTrashed()],
-            'domain'             => [
+            'name'   => ['required', 'string', 'max:255'],
+            'domain' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('tenant_domains', 'name')->withoutTrashed(),
             ],
-            'domain_description' => ['nullable', 'string'],
-            'domain_slug'        => ['required', 'string', 'max:255'],
-            'username'           => ['required', 'string', 'max:255'],
-            'email'              => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->withoutTrashed()],
-            'password'           => ['required', 'string'],
-            'role'               => ['required', 'string', 'max:255'],
-            'role_description'   => ['nullable', 'string', 'max:255'],
-            'guard'              => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->withoutTrashed()],
+            'password' => ['required', 'string'],
+            'role'     => ['required', 'string', 'max:255'],
+            'guard'    => ['required', 'string', 'max:255'],
         ]);
 
         if ($validator->fails()) {
@@ -146,7 +125,7 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             return null;
         }
 
-        /** @var array{name: string, description: string|null, slug: string, domain: string, domain_description: string|null, domain_slug: string, username: string, email: string, password: string, role: string, role_description: string|null, guard: string} $data */
+        /** @var array{name: string, domain: string, username: string, email: string, password: string, role: string, guard: string} $data */
         $data = $validator->validated();
 
         return $data;
