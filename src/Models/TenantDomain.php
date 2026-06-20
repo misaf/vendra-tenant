@@ -33,6 +33,7 @@ final class TenantDomain extends Model
 {
     use BelongsToTenant;
     use HasDefaultActivityLogOptions;
+
     /** @use HasFactory<TenantDomainFactory> */
     use HasFactory;
     use LogsActivity;

@@ -43,6 +43,7 @@ use Znck\Eloquent\Traits\BelongsToThrough as TraitBelongsToThrough;
 final class Tenant extends SpatieTenant
 {
     use HasDefaultActivityLogOptions;
+
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
     use HasFeatures;
