@@ -7,7 +7,6 @@ namespace Misaf\VendraTenant\Providers;
 use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
 use Misaf\VendraTenant\Console\Commands\ProvisionTenantCommand;
-use Misaf\VendraTenant\Console\Commands\SeedCommand;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,7 +24,6 @@ final class TenantServiceProvider extends PackageServiceProvider
             ])
             ->hasCommands(
                 ProvisionTenantCommand::class,
-                SeedCommand::class,
             )
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');
