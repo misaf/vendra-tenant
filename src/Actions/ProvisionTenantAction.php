@@ -52,6 +52,8 @@ final class ProvisionTenantAction
             isVerified: $isVerified,
         );
 
+        $user->tenants()->syncWithoutDetaching([$tenant->id]);
+
         $role = $this->createRoleAction->execute(
             tenant: $tenant,
             name: $data['role'],
