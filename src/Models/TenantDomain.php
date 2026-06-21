@@ -6,6 +6,7 @@ namespace Misaf\VendraTenant\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,6 +53,24 @@ final class TenantDomain extends Model
             'slug'        => 'string',
             'status'      => 'boolean',
         ];
+    }
+
+    /**
+     * @param Builder<TenantDomain> $query
+     * @return Builder<TenantDomain>
+     */
+    public function scopeEnabled(Builder $query): Builder
+    {
+        return $query->where('status', true);
+    }
+
+    /**
+     * @param Builder<TenantDomain> $query
+     * @return Builder<TenantDomain>
+     */
+    public function scopeDisabled(Builder $query): Builder
+    {
+        return $query->where('status', false);
     }
 
     public function getSlugOptions(): SlugOptions
