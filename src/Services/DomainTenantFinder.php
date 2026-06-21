@@ -6,62 +6,28 @@ namespace Misaf\VendraTenant\Services;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraTenant\Models\TenantDomain;
 use Spatie\Multitenancy\Contracts\IsTenant;
-use Spatie\Multitenancy\TenantFinder\TenantFinder;
+use Spatie\Multitenancy\TenantFinder\TenantFinder as SpatieTenantFinder;
 
-final class DomainTenantFinder extends TenantFinder
+final class DomainTenantFinder extends SpatieTenantFinder
 {
-    /**
-     * @param Request $request
-     * @return IsTenant|null
-     */
     public function findForRequest(Request $request): ?IsTenant
     {
-        $rootDomain = $this->extractRootDomain($request->getHost());
+        $tenantDomain = TenantDomain::query()
+            ->with('tenant')
+            ->where('name', $request->getHost())
+            ->where('status', true)
+            ->whereHas('tenant', fn(Builder $query): Builder => $query->where('status', true))
+            ->first();
 
-        if ( ! $this->isValidDomain($rootDomain)) {
+        if ( ! $tenantDomain instanceof TenantDomain) {
             return null;
         }
 
-        return $this->findTenantByDomain($rootDomain);
-    }
+        $tenant = $tenantDomain->tenant;
 
-    /**
-     * @param string $domain
-     * @return Tenant|null
-     */
-    private function findTenantByDomain(string $domain): ?Tenant
-    {
-        /** @var class-string<Tenant> $tenantModel */
-        $tenantModel = Config::string('multitenancy.tenant_model');
-
-        return $tenantModel::whereHas('tenantDomains', function (Builder $query) use ($domain): void {
-            $query->where('name', $domain)
-                ->where('status', true);
-        })
-            ->where('status', true)
-            ->first();
-    }
-
-    /**
-     * @param string $host
-     * @return string
-     */
-    private function extractRootDomain(string $host): string
-    {
-        // e.g. sub.domain.tld → domain.tld
-        return Str::afterLast(Str::beforeLast($host, '.'), '.') . '.' . Str::afterLast($host, '.');
-    }
-
-    /**
-     * @param string $domain
-     * @return bool
-     */
-    private function isValidDomain(string $domain): bool
-    {
-        return ! empty($domain) && false !== filter_var($domain, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME);
+        return $tenant instanceof Tenant ? $tenant : null;
     }
 }
