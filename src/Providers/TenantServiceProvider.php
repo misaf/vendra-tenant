@@ -17,7 +17,6 @@ final class TenantServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('vendra-tenant')
-            ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations([
                 'create_tenants_table'
