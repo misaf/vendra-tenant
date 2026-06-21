@@ -6,6 +6,7 @@ namespace Misaf\VendraTenant\Tasks;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
+use Misaf\VendraTenant\Models\Tenant;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
@@ -15,45 +16,45 @@ final class SwitchAppTask implements SwitchTenantTask
 
     private string $originalName;
 
+    private string $originalProgressBarColor;
+
     private string $originalTimezone;
 
-    private string $originalUrlScheme;
+    private string $originalUrl;
 
     public function __construct()
     {
         $this->originalLocale = Config::string('app.locale');
         $this->originalName = Config::string('app.name');
+        $this->originalProgressBarColor = Config::string('livewire.navigate.progress_bar_color');
         $this->originalTimezone = Config::string('app.timezone');
-        $this->originalUrlScheme = parse_url(Config::string('app.url'), PHP_URL_SCHEME) ?: 'https';
+        $this->originalUrl = Config::string('app.url');
     }
 
     public function forgetCurrent(): void
     {
         Config::set('app.locale', $this->originalLocale);
         Config::set('app.name', $this->originalName);
+        Config::set('livewire.navigate.progress_bar_color', $this->originalProgressBarColor);
         Config::set('app.timezone', $this->originalTimezone);
+        Config::set('app.url', $this->originalUrl);
 
-        $this->setAppUrl($this->originalUrlScheme, parse_url(Config::string('app.url'), PHP_URL_HOST) ?? '');
+        URL::forceRootUrl($this->originalUrl);
     }
 
+    /**
+     * @param Tenant $tenant
+     */
     public function makeCurrent(IsTenant $tenant): void
     {
+        $appUrl = request()->schemeAndHttpHost();
+
         Config::set('app.locale', 'en');
         Config::set('app.name', $tenant->name);
+        Config::set('livewire.navigate.progress_bar_color', '#f59e0b');
         Config::set('app.timezone', 'Asia/Tehran');
+        Config::set('app.url', $appUrl);
 
-        $this->setAppUrl(
-            $this->originalUrlScheme,
-            request()->getHost(),
-        );
-
-        Config::set('livewire.navigate.progress_bar_color', ['progress_color' => 'rgb(245, 158, 11)']);
-    }
-
-    private function setAppUrl(string $scheme, string $host): void
-    {
-        $url = "{$scheme}://{$host}";
-        Config::set('app.url', $url);
-        URL::forceRootUrl($url);
+        URL::forceRootUrl($appUrl);
     }
 }
