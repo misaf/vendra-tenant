@@ -6,7 +6,6 @@ namespace Misaf\VendraTenant\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Misaf\VendraTenant\Actions\ProvisionTenantAction;
@@ -18,16 +17,9 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
         {domain : Tenant domain}
         {username : Username for the tenant owner}
         {email : Email address for the tenant owner}
-        {--description= : Tenant description}
-        {--domain-description= : Tenant domain description}
-        {--password= : Password for the tenant owner}
-        {--role= : Default role name to create and assign}
-        {--role-description= : Default role description}
-        {--guard=web : Guard name for the default role}
-        {--verified : Mark the user email as verified}
-        {--disabled : Create the tenant and domain as disabled}';
+        {--seed : Run default tenant seeders after provisioning}';
 
-    protected $description = 'Provision a tenant with a domain, owner user, default role, and role assignment';
+    protected $description = 'Provision a tenant with a domain, owner user, and role assignment';
 
     public function __construct(private readonly ProvisionTenantAction $provisionTenantAction)
     {
@@ -55,14 +47,18 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             return self::FAILURE;
         }
 
-        $result = $this->provisionTenantAction->execute(
-            $data,
-            ! $this->option('disabled'),
-            (bool) $this->option('verified'),
-        );
+        $shouldSeed = $this->shouldSeedTenant();
 
-        $this->info("Provisioned tenant {$result['tenant']->name} [{$result['tenant']->slug}] with domain [{$data['domain']}].");
-        $this->info("Created user {$result['user']->username} ({$result['user']->email}) and assigned role [{$result['role']->name}].");
+        $result = $this->provisionTenantAction->execute($data, $shouldSeed);
+
+        $this->info('Tenant provisioned.');
+        $this->table(['Field', 'Value'], [
+            ['Domain', $data['domain']],
+            ['Username', $result['user']->username],
+            ['Email', $result['user']->email],
+            ['Password', $result['password']],
+            ['Seeders', $shouldSeed ? 'Run' : 'Skipped'],
+        ]);
 
         return self::SUCCESS;
     }
@@ -72,10 +68,7 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
      *     name: string,
      *     domain: string,
      *     username: string,
-     *     email: string,
-     *     password: string,
-     *     role: string,
-     *     guard: string
+     *     email: string
      * }|null
      */
     private function validatedInput(): ?array
@@ -85,22 +78,7 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             'domain'   => $this->argument('domain'),
             'username' => $this->argument('username'),
             'email'    => $this->argument('email'),
-            'role'     => $this->option('role'),
-            'guard'    => $this->option('guard'),
-            'password' => $this->option('password'),
         ];
-
-        if (blank($input['role'])) {
-            $input['role'] = Config::string('vendra-permission.super_admin_role', 'super-admin');
-        }
-
-        if (blank($input['guard'])) {
-            $input['guard'] = 'web';
-        }
-
-        if (blank($input['password'])) {
-            $input['password'] = $this->input->isInteractive() ? $this->secret('Password') : null;
-        }
 
         $validator = Validator::make($input, [
             'name'   => ['required', 'string', 'max:255'],
@@ -112,9 +90,6 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             ],
             'username' => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', Rule::unique('users', 'email')->withoutTrashed()],
-            'password' => ['required', 'string'],
-            'role'     => ['required', 'string', 'max:255'],
-            'guard'    => ['required', 'string', 'max:255'],
         ]);
 
         if ($validator->fails()) {
@@ -125,9 +100,22 @@ final class ProvisionTenantCommand extends Command implements PromptsForMissingI
             return null;
         }
 
-        /** @var array{name: string, domain: string, username: string, email: string, password: string, role: string, guard: string} $data */
+        /** @var array{name: string, domain: string, username: string, email: string} $data */
         $data = $validator->validated();
 
         return $data;
+    }
+
+    private function shouldSeedTenant(): bool
+    {
+        if ((bool) $this->option('seed')) {
+            return true;
+        }
+
+        if ( ! $this->input->isInteractive()) {
+            return false;
+        }
+
+        return $this->confirm('Run default tenant seeders?', true);
     }
 }

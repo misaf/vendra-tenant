@@ -4,68 +4,91 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Actions;
 
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Misaf\VendraPermission\Actions\CreateRoleAction;
-use Misaf\VendraPermission\Models\Role;
 use Misaf\VendraTenant\Models\Tenant;
-use Misaf\VendraUser\Actions\CreateUserAction;
 use Misaf\VendraUser\Models\User;
+use RuntimeException;
 
 final class ProvisionTenantAction
 {
+    /**
+     * @var list<string>
+     */
+    private const array SEED_COMMANDS = [
+        'vendra-permission:seed',
+        'vendra-user:seed',
+        'vendra-currency:seed',
+        'vendra-product:seed',
+        'vendra-faq:seed',
+        'vendra-custom-page:seed',
+        'vendra-tagger:seed',
+        'vendra-language:seed',
+    ];
+
     public function __construct(
-        private readonly CreateUserAction $createUserAction,
+        private readonly CreateTenantAction $createTenantAction,
         private readonly CreateRoleAction $createRoleAction,
     ) {}
 
     /**
      * @param array{
      *     name: string,
-     *     description: string|null,
      *     domain: string,
      *     username: string,
-     *     email: string,
-     *     password: string,
-     *     role: string,
-     *     guard: string
+     *     email: string
      * } $data
-     * @return array{tenant: Tenant, user: User, role: Role}
+     * @return array{tenant: Tenant, user: User, password: string}
      */
-    public function execute(array $data, bool $isEnabled, bool $isVerified): array
+    public function execute(array $data, bool $shouldSeed = false): array
     {
-        $tenant = Tenant::query()->create([
-            'name'   => $data['name'],
-            'slug'   => $data['name'],
-            'status' => $isEnabled,
-        ]);
+        $password = Str::password(length: 8, letters: true, numbers: true, symbols: false);
 
-        $tenant->tenantDomains()->create([
-            'name'   => $data['domain'],
-            'slug'   => $data['domain'],
-            'status' => $isEnabled,
-        ]);
+        return DB::transaction(function () use ($data, $password, $shouldSeed): array {
+            $result = $this->createTenantAction->execute(
+                name: $data['name'],
+                domain: $data['domain'],
+                username: $data['username'],
+                email: $data['email'],
+                password: $password,
+            );
 
-        $user = $this->createUserAction->execute(
-            tenant: $tenant,
-            username: $data['username'],
-            email: $data['email'],
-            password: $data['password'],
-            isVerified: $isVerified,
-        );
+            $role = $this->createRoleAction->execute(
+                tenant: $result['tenant'],
+                name: Config::string('vendra-permission.super_admin_role'),
+            );
 
-        $user->tenants()->syncWithoutDetaching([$tenant->id]);
+            $result['tenant']->execute(fn() => $result['user']->assignRole($role));
 
-        $role = $this->createRoleAction->execute(
-            tenant: $tenant,
-            name: $data['role'],
-            guardName: $data['guard'],
-        );
+            if ($shouldSeed) {
+                $this->seedTenant($result['tenant']);
+            }
 
-        $user->assignRole($role);
+            return [
+                ...$result,
+                'password' => $password,
+            ];
+        });
+    }
 
-        return [
-            'tenant' => $tenant,
-            'user'   => $user,
-            'role'   => $role,
-        ];
+    private function seedTenant(Tenant $tenant): void
+    {
+        foreach (self::SEED_COMMANDS as $command) {
+            $exitCode = Artisan::call($command, [
+                'tenant'  => $tenant->slug,
+                'seeders' => ['all'],
+            ]);
+
+            if (0 !== $exitCode) {
+                throw new RuntimeException(sprintf(
+                    'Seed command [%s] failed with exit code [%d].',
+                    $command,
+                    $exitCode,
+                ));
+            }
+        }
     }
 }
