@@ -47,7 +47,7 @@ final class ProvisionTenantAction
     {
         $password = Str::password(length: 8, letters: true, numbers: true, symbols: false);
 
-        return DB::transaction(function () use ($data, $password, $shouldSeed): array {
+        $result = DB::transaction(function () use ($data, $password, $shouldSeed): array {
             $result = $this->createTenantAction->execute(
                 name: $data['name'],
                 domain: $data['domain'],
@@ -72,6 +72,10 @@ final class ProvisionTenantAction
                 'password' => $password,
             ];
         });
+
+        $this->cacheTenantRoutes($result['tenant']);
+
+        return $result;
     }
 
     private function seedTenant(Tenant $tenant): void
@@ -89,6 +93,21 @@ final class ProvisionTenantAction
                     $exitCode,
                 ));
             }
+        }
+    }
+
+    private function cacheTenantRoutes(Tenant $tenant): void
+    {
+        $exitCode = Artisan::call('tenants:artisan', [
+            'artisanCommand' => 'route:cache',
+            '--tenant'       => [$tenant->getKey()],
+        ]);
+
+        if (0 !== $exitCode) {
+            throw new RuntimeException(sprintf(
+                'Tenant route cache command failed with exit code [%d].',
+                $exitCode,
+            ));
         }
     }
 }
