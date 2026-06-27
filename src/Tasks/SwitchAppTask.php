@@ -49,7 +49,7 @@ final class SwitchAppTask implements SwitchTenantTask
     {
         $appUrl = request()->schemeAndHttpHost();
 
-        Config::set('app.locale', 'en');
+        Config::set('app.locale', 'fa');
         Config::set('app.name', $tenant->name);
         Config::set('livewire.navigate.progress_bar_color', '#f59e0b');
         Config::set('app.timezone', 'Asia/Tehran');
