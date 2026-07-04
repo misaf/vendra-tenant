@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Scopes;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
 final class TeamScope implements Scope
 {
+    /**
+     * @param Builder<Model> $builder
+     * @param Model $model
+     * @return void
+     */
     public function apply(Builder $builder, Model $model): void
     {
         // If tenant was already resolved by TenantScope, skip team fallback.
-        if (null !== app(TenantResolver::class)->getTenantId()) {
+        if (app()->has('currentTenant')) {
             return;
         }
 
