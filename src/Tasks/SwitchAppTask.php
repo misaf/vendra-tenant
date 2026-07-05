@@ -43,7 +43,7 @@ final class SwitchAppTask implements SwitchTenantTask
     }
 
     /**
-     * @param Tenant $tenant
+     * @param  Tenant  $tenant
      */
     public function makeCurrent(IsTenant $tenant): void
     {

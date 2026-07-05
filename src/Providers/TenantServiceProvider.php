@@ -20,7 +20,7 @@ final class TenantServiceProvider extends PackageServiceProvider
             ->name('vendra-tenant')
             ->hasTranslations()
             ->hasMigrations([
-                'create_tenants_table'
+                'create_tenants_table',
             ])
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');

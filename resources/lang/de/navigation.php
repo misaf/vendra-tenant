@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-return  [
+return [
     'tenant'            => 'Mandanten',
     'tenant_management' => 'Mandantenverwaltung',
 ];

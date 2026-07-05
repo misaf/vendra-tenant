@@ -36,6 +36,7 @@ final class Tenant extends SpatieTenant
 
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
+
     use HasFeatures;
     use LogsActivity;
     use SoftDeletes;
@@ -55,7 +56,7 @@ final class Tenant extends SpatieTenant
     }
 
     /**
-     * @param Builder<Tenant> $query
+     * @param  Builder<Tenant>  $query
      * @return Builder<Tenant>
      */
     public function scopeEnabled(Builder $query): Builder
@@ -64,7 +65,7 @@ final class Tenant extends SpatieTenant
     }
 
     /**
-     * @param Builder<Tenant> $query
+     * @param  Builder<Tenant>  $query
      * @return Builder<Tenant>
      */
     public function scopeDisabled(Builder $query): Builder

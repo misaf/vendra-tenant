@@ -37,6 +37,7 @@ final class TenantDomain extends Model
 
     /** @use HasFactory<TenantDomainFactory> */
     use HasFactory;
+
     use LogsActivity;
     use SoftDeletes;
 
@@ -56,7 +57,7 @@ final class TenantDomain extends Model
     }
 
     /**
-     * @param Builder<TenantDomain> $query
+     * @param  Builder<TenantDomain>  $query
      * @return Builder<TenantDomain>
      */
     public function scopeEnabled(Builder $query): Builder
@@ -65,7 +66,7 @@ final class TenantDomain extends Model
     }
 
     /**
-     * @param Builder<TenantDomain> $query
+     * @param  Builder<TenantDomain>  $query
      * @return Builder<TenantDomain>
      */
     public function scopeDisabled(Builder $query): Builder

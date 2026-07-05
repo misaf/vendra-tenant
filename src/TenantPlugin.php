@@ -24,7 +24,7 @@ final class TenantPlugin implements Plugin
     public static function make(): static
     {
         /** @var static $plugin */
-        $plugin = app(static::class);
+        $plugin = app(self::class);
 
         return $plugin;
     }
@@ -49,7 +49,7 @@ final class TenantPlugin implements Plugin
             ->tenant(Tenant::class)
             // ->brandName(fn(GeneralSettings $generalSettings) => $generalSettings?->site_title ?? 'Default')
             ->colors([
-                'primary' => Color::Gray
+                'primary' => Color::Gray,
             ]);
     }
 
