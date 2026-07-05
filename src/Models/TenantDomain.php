@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
+use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraTenant\Database\Factories\TenantDomainFactory;
-use Misaf\VendraTenant\Traits\BelongsToTenant;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Sluggable\SlugOptions;
 

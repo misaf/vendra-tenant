@@ -6,7 +6,8 @@ namespace Misaf\VendraTenant\Providers;
 
 use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
-use Misaf\VendraTenant\Console\Commands\ProvisionTenantCommand;
+use Misaf\VendraSupport\Contracts\TenantResolver;
+use Misaf\VendraTenant\Support\VendraTenantResolver;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -21,12 +22,14 @@ final class TenantServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_tenants_table'
             ])
-            ->hasCommands(
-                ProvisionTenantCommand::class,
-            )
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');
             });
+    }
+
+    public function registeringPackage(): void
+    {
+        $this->app->singleton(TenantResolver::class, VendraTenantResolver::class);
     }
 
     public function packageRegistered(): void
