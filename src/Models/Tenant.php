@@ -12,9 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Laravel\Pennant\Concerns\HasFeatures;
-use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
+use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraTenant\Database\Factories\TenantFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 use Spatie\Sluggable\SlugOptions;
 
@@ -30,15 +29,12 @@ use Spatie\Sluggable\SlugOptions;
  */
 #[Fillable(['name', 'description', 'slug', 'status'])]
 #[UseFactory(TenantFactory::class)]
-final class Tenant extends SpatieTenant
+final class Tenant extends SpatieTenant implements ShouldLogActivity
 {
-    use HasDefaultActivityLogOptions;
-
     /** @use HasFactory<TenantFactory> */
     use HasFactory;
 
     use HasFeatures;
-    use LogsActivity;
     use SoftDeletes;
 
     /**

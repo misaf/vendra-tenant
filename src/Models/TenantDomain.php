@@ -11,10 +11,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
+use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraTenant\Database\Factories\TenantDomainFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Sluggable\SlugOptions;
 
 /**
@@ -30,15 +29,13 @@ use Spatie\Sluggable\SlugOptions;
  */
 #[Fillable(['name', 'description', 'slug', 'status'])]
 #[UseFactory(TenantDomainFactory::class)]
-final class TenantDomain extends Model
+final class TenantDomain extends Model implements ShouldLogActivity
 {
     use BelongsToTenant;
-    use HasDefaultActivityLogOptions;
 
     /** @use HasFactory<TenantDomainFactory> */
     use HasFactory;
 
-    use LogsActivity;
     use SoftDeletes;
 
     /**
