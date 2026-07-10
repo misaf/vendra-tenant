@@ -1,5 +1,6 @@
 {
     "name": "misaf/vendra-tenant",
+    "version": "0.0.1",
     "description": "Multi-tenancy management system with isolated data and configuration per tenant",
     "keywords": [
         "laravel",
