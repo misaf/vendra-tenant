@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Support;
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Models\Tenant;
+use RuntimeException;
 
 final class VendraTenantResolver implements TenantResolver
 {
@@ -54,6 +56,19 @@ final class VendraTenantResolver implements TenantResolver
         $tenant->makeCurrent();
 
         return true;
+    }
+
+    public function execute(Model|int|string $tenant, Closure $callback): mixed
+    {
+        if (is_int($tenant) || is_string($tenant)) {
+            $tenant = $this->findByKeyOrSlug($tenant);
+        }
+
+        if ( ! $tenant instanceof Tenant) {
+            throw new RuntimeException('The given tenant could not be resolved.');
+        }
+
+        return $tenant->execute($callback);
     }
 
     /**

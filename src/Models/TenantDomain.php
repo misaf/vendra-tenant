@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Misaf\VendraTenant\Database\Factories\TenantDomainFactory;
+use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
 /**
@@ -35,6 +36,8 @@ final class TenantDomain extends Model implements ShouldLogActivity
 
     /** @use HasFactory<TenantDomainFactory> */
     use HasFactory;
+
+    use HasSlug;
 
     use SoftDeletes;
 

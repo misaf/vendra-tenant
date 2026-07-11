@@ -15,6 +15,7 @@ use Laravel\Pennant\Concerns\HasFeatures;
 use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraTenant\Database\Factories\TenantFactory;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
+use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
 /**
@@ -35,6 +36,8 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
     use HasFactory;
 
     use HasFeatures;
+
+    use HasSlug;
     use SoftDeletes;
 
     /**
