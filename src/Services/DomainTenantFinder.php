@@ -14,10 +14,15 @@ final class DomainTenantFinder extends SpatieTenantFinder
 {
     public function findForRequest(Request $request): ?IsTenant
     {
+        return $this->findForHost($request->getHost());
+    }
+
+    public function findForHost(string $host): ?IsTenant
+    {
         return Tenant::query()
             ->enabled()
             ->whereHas('tenantDomains', fn(Builder $query): Builder => $query
-                ->where('name', $request->getHost())
+                ->where('name', $host)
                 ->where('status', true))
             ->first();
     }

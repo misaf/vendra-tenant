@@ -1,6 +1,5 @@
 {
     "name": "misaf/vendra-tenant",
-    "version": "0.0.7",
     "description": "Multi-tenancy management system with isolated data and configuration per tenant",
     "keywords": [
         "laravel",
@@ -52,13 +51,13 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.0.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Misaf\\VendraTenant\\Providers\\TenantServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-master": "13.x-dev"
         }
     },
     "scripts": {

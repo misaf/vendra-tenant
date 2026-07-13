@@ -1,6 +1,6 @@
 ---
 name: vendra-tenant-development
-description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Tenant provider module in app-modules/vendra-tenant. Trigger for the Tenant / TenantDomain models, VendraTenantResolver, DomainTenantFinder, SwitchAppTask / SwitchMailTask, TenantPlugin, TenantServiceProvider, Spatie multitenancy wiring, and the TenantResolver binding that enables tenant awareness."
+description: "Use this skill when creating, modifying, reviewing, or testing the Vendra Tenant provider module in packages/vendra-tenant. Trigger for the Tenant / TenantDomain models, VendraTenantResolver, DomainTenantFinder, SwitchAppTask / SwitchMailTask, TenantPlugin, TenantServiceProvider, Spatie multitenancy wiring, and the TenantResolver binding that enables tenant awareness."
 ---
 
 # Vendra Tenant
@@ -11,7 +11,7 @@ Always use this skill together with `modular` for module structure, `laravel-bes
 
 ## Module Boundary
 
-Treat `app-modules/vendra-tenant` as the concrete multi-tenancy provider.
+Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
 
 - Use namespace `Misaf\VendraTenant`.
 - Own the concrete `Tenant` and `TenantDomain` models, `VendraTenantResolver`, `DomainTenantFinder`, the switch tasks, `TenantPlugin`, and `TenantServiceProvider` here.
@@ -28,5 +28,5 @@ Treat `app-modules/vendra-tenant` as the concrete multi-tenancy provider.
 
 - Keep tests purposeful: cover resolver contract conformance, domain resolution, and tenant switching.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets. Do not add a `not->toUse('Misaf\VendraTenant')` expectation — this module intentionally references the concrete tenant.
-- Run module checks: `composer --working-dir=app-modules/vendra-tenant test` and `composer --working-dir=app-modules/vendra-tenant analyse`.
+- Run module checks: `composer --working-dir=packages/vendra-tenant test` and `composer --working-dir=packages/vendra-tenant analyse`.
 - If PHP files changed, run `vendor/bin/pint --dirty --format agent`.

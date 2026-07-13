@@ -25,6 +25,7 @@ final class TenantServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_tenants_table',
             ])
+            ->hasRoute('web')
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');
             });
