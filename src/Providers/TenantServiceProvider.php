@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Providers;
 
+use Composer\InstalledVersions;
+
 use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
 use Misaf\VendraSupport\Contracts\TenantResolver;
@@ -49,6 +51,6 @@ final class TenantServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        AboutCommand::add('Vendra Tenant', fn() => ['Version' => 'dev-master']);
+        AboutCommand::add('Vendra Tenant', fn() => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-tenant')]);
     }
 }
