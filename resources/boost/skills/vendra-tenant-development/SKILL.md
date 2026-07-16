@@ -5,9 +5,9 @@ description: "Use this skill when creating, modifying, reviewing, or testing the
 
 # Vendra Tenant
 
-## Required Context
+## Workflow
 
-Always use this skill together with `modular` for module structure, `laravel-best-practices` for Laravel PHP, and `pest-testing` when tests are added or changed. Pair it with `vendra-support-development` whenever the `TenantResolver` contract is involved. Before code changes, use Laravel Boost `application-info` and `search-docs`.
+Always use this skill together with `laravel-best-practices` for Laravel PHP and `pest-testing` when tests are added or changed. Pair it with `vendra-support-development` whenever the `TenantResolver` contract is involved. Before code changes, use Laravel Boost `application-info` and `search-docs`.
 
 ## Module Boundary
 
@@ -21,6 +21,7 @@ Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
 ## Provider Responsibilities
 
 - Bind `VendraTenantResolver` as the `TenantResolver` in `TenantServiceProvider`; it must implement every contract method (`available`, `current`, `currentId`, `modelClass`, `findByKeyOrSlug`, `makeCurrent`, `searchOptions`).
+- Keep `searchOptions` scoped to enabled tenants (the `Tenant::enabled()` scope on `status`); tenant pickers and prompts must never offer disabled tenants.
 - Keep tenant context switching (Spatie tasks such as `SwitchAppTask` / `SwitchMailTask`) inside this module.
 - Keep domain resolution (`DomainTenantFinder`) and any tenant Filament wiring (`TenantPlugin`) here.
 

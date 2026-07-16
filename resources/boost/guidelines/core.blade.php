@@ -9,5 +9,6 @@ The `misaf/vendra-tenant` package is the concrete multi-tenancy **provider**. In
 - **This is the single module allowed to reference the concrete tenant.** All tenant switching, resolution, and Spatie wiring lives here.
 - No other module may depend on `misaf/vendra-tenant`, with one documented exception: `misaf/vendra-subscription`, which owns tenant provisioning. All other domain and API modules consume tenancy only through `misaf/vendra-support` (`TenantResolver`, `TenantAwareness`, `BelongsToTenant`). Do not create further reverse dependencies.
 - Keep `VendraTenantResolver` a faithful implementation of the support `TenantResolver` contract; when the contract changes, update this resolver and the null resolver together.
+- Keep `searchOptions` scoped to enabled tenants (the `Tenant::enabled()` scope on `status`); tenant pickers and prompts must never offer disabled tenants.
 - Follow Laravel comment style: document with PHPDoc (array shapes, generics, `@see`) and reserve inline comments for genuinely complex logic.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets. This module legitimately references the tenant, so it does not assert a `not->toUse('Misaf\VendraTenant')` expectation.
