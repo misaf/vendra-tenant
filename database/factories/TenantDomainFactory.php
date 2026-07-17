@@ -29,4 +29,11 @@ final class TenantDomainFactory extends Factory
             'status'      => fake()->boolean(),
         ];
     }
+
+    public function forTenant(Tenant $tenant): static
+    {
+        return $this->state(fn(): array => [
+            'tenant_id' => $tenant->id,
+        ]);
+    }
 }
