@@ -10,6 +10,7 @@ use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraSupport\Filament\Concerns\ResolvesConfiguredPanels;
+use Misaf\VendraTenant\Console\Commands\EnableTenancyCommand;
 use Misaf\VendraTenant\Support\VendraTenantResolver;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -27,6 +28,7 @@ final class TenantServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_tenants_table',
             ])
+            ->hasCommand(EnableTenancyCommand::class)
             ->hasRoute('web')
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');

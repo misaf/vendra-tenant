@@ -1,19 +1,25 @@
 {
     "name": "misaf/vendra-tenant",
     "description": "Multi-tenancy management system with isolated data and configuration per tenant",
+    "license": "MIT",
+    "type": "vendra-module",
     "keywords": [
         "laravel",
         "filamentphp",
         "tenant"
     ],
-    "license": "MIT",
     "authors": [
         {
             "name": "Ehsan Mahmoodi",
-            "email": "misaf.1990@gmail.com"
+            "email": "misaf.1990@gmail.com",
+            "role": "Developer"
         }
     ],
-    "type": "vendra-module",
+    "homepage": "https://github.com/misaf/vendra-tenant",
+    "support": {
+        "issues": "https://github.com/misaf/vendra-tenant/issues",
+        "source": "https://github.com/misaf/vendra-tenant"
+    },
     "require": {
         "php": "^8.3",
         "filament/filament": "^5.6.8",
@@ -39,6 +45,8 @@
         "pestphp/pest-plugin-laravel": "^4.1",
         "phpstan/extension-installer": "^1.4.3"
     },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Misaf\\VendraTenant\\": "src/",
@@ -50,6 +58,16 @@
             "Misaf\\VendraTenant\\Database\\Factories\\": "database/factories/",
             "Misaf\\VendraTenant\\Tests\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "extra": {
         "laravel": {
@@ -64,17 +82,5 @@
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage"
     },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true,
-            "php-http/discovery": true,
-            "phpstan/extension-installer": true
-        },
-        "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "sort-packages": true
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
     "$schema": "https://getcomposer.org/schema.json"
 }
