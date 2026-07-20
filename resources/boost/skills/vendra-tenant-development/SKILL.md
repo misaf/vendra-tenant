@@ -23,6 +23,7 @@ Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
 - Own the concrete `Tenant` and `TenantDomain` models, `VendraTenantResolver`, `DomainTenantFinder`, the switch tasks, `TenantPlugin`, `EnableTenancyAction`, `EnableTenancyCommand`, and `TenantServiceProvider` here.
 - This is the only module permitted to reference the concrete tenant model and Spatie multitenancy APIs.
 - No domain, API, or support module may depend on this package. Enabling tenancy is done by installing this provider, which binds `Misaf\VendraSupport\Contracts\TenantResolver` to `VendraTenantResolver`.
+- Module test suites must not import `Misaf\VendraTenant` either — they use the `misaf/vendra-testing` tenancy helpers (`makeCurrentTestTenant()`, `createTestTenant()`, `switchToTestTenant()`, …). Only this package's and `vendra-subscription`'s tests may import the concrete tenant; the root `PackageManifestConsistencyTest` guard enforces it.
 
 ## Provider Responsibilities
 
