@@ -20,9 +20,9 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * @property int $id
  * @property int $tenant_id
- * @property array<string, string> $name
- * @property array<string, string> $description
- * @property array<string, string> $slug
+ * @property string $name
+ * @property string $description
+ * @property string $slug
  * @property bool $status
  * @property Carbon $created_at
  * @property Carbon $updated_at
