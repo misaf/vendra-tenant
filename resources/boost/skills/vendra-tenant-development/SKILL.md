@@ -20,7 +20,7 @@ Always use this skill together with `laravel-best-practices` for Laravel PHP and
 Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
 
 - Use namespace `Misaf\VendraTenant`.
-- Own the concrete `Tenant` and `TenantDomain` models, `VendraTenantResolver`, `DomainTenantFinder`, the switch tasks, `Jobs\CacheTenantRoutesJob` (implements Spatie `NotTenantAware`), `TenantPlugin`, `EnableTenancyAction`, `EnableTenancyCommand`, and `TenantServiceProvider` here. The `tenants` table carries a nullable `account_id` (billing account owned by `misaf/vendra-subscription`) as a plain indexed column with no FK or `Tenant` relation.
+- Own the concrete `Tenant` and `TenantDomain` models, `VendraTenantResolver`, `DomainTenantFinder`, the switch tasks, `Jobs\CacheTenantRoutesJob` (implements Spatie `NotTenantAware`), `TenantPlugin`, `EnableTenancyAction`, `EnableTenancyCommand`, and `TenantServiceProvider` here. The `tenants` table carries a nullable `reseller_id` (billing reseller owned by `misaf/vendra-subscription`) as a plain indexed column with no FK or `Tenant` relation.
 - This is the only module permitted to reference the concrete tenant model and Spatie multitenancy APIs.
 - No domain, API, or support module may depend on this package. Enabling tenancy is done by installing this provider, which binds `Misaf\VendraSupport\Contracts\TenantResolver` to `VendraTenantResolver`.
 - Module test suites must not import `Misaf\VendraTenant` either — they use the `misaf/vendra-testing` tenancy helpers (`makeCurrentTestTenant()`, `createTestTenant()`, `switchToTestTenant()`, …). Only this package's and `vendra-subscription`'s tests may import the concrete tenant; the root `PackageManifestConsistencyTest` guard enforces it.

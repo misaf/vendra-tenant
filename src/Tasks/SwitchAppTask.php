@@ -22,6 +22,8 @@ final class SwitchAppTask implements SwitchTenantTask
 
     private string $originalUrl;
 
+    private string $originalAssetUrl;
+
     public function __construct()
     {
         $this->originalLocale = Config::string('app.locale');
@@ -29,6 +31,7 @@ final class SwitchAppTask implements SwitchTenantTask
         $this->originalProgressBarColor = Config::string('livewire.navigate.progress_bar_color');
         $this->originalTimezone = Config::string('app.timezone');
         $this->originalUrl = Config::string('app.url');
+        $this->originalAssetUrl = Config::string('app.asset_url');
     }
 
     public function forgetCurrent(): void
@@ -38,8 +41,10 @@ final class SwitchAppTask implements SwitchTenantTask
         Config::set('livewire.navigate.progress_bar_color', $this->originalProgressBarColor);
         Config::set('app.timezone', $this->originalTimezone);
         Config::set('app.url', $this->originalUrl);
+        Config::set('app.asset_url', $this->originalAssetUrl);
 
         URL::forceRootUrl($this->originalUrl);
+        URL::useAssetOrigin($this->originalAssetUrl);
     }
 
     /**
@@ -54,7 +59,9 @@ final class SwitchAppTask implements SwitchTenantTask
         Config::set('livewire.navigate.progress_bar_color', '#f59e0b');
         Config::set('app.timezone', 'Asia/Tehran');
         Config::set('app.url', $appUrl);
+        Config::set('app.asset_url', $appUrl);
 
         URL::forceRootUrl($appUrl);
+        URL::useAssetOrigin($appUrl);
     }
 }

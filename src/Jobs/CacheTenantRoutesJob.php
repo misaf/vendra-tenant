@@ -20,7 +20,7 @@ use Spatie\Multitenancy\Jobs\NotTenantAware;
  * on a queue keeps provisioning responsive under load. It targets its tenant
  * explicitly via the `--tenant` option, so it opts out of Spatie's automatic
  * tenant-aware job binding (there is no current tenant when it is dispatched
- * from the platform panel).
+ * from the console panel).
  */
 final class CacheTenantRoutesJob implements NotTenantAware, ShouldQueue
 {

@@ -5,38 +5,38 @@ declare(strict_types=1);
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Models\TenantDomain;
 
-it('soft-deletes a website domains even when another tenant is current', function (): void {
+it('soft-deletes a property domains even when another tenant is current', function (): void {
     $current = Tenant::factory()->create();
-    $website = Tenant::factory()->create();
-    $domain = TenantDomain::factory()->for($website)->create(['status' => true]);
+    $property = Tenant::factory()->create();
+    $domain = TenantDomain::factory()->for($property)->create(['status' => true]);
 
     switchToTestTenant($current);
 
-    $website->delete();
+    $property->delete();
 
     $persisted = TenantDomain::withoutGlobalScopes()->withTrashed()->find($domain->getKey());
 
-    expect($website->fresh()?->trashed())->toBeTrue()
+    expect($property->fresh()?->trashed())->toBeTrue()
         ->and($persisted?->trashed())->toBeTrue();
 });
 
-it('restores trashed domains when a website is restored', function (): void {
-    $website = Tenant::factory()->create();
-    $domain = TenantDomain::factory()->for($website)->create(['status' => true]);
+it('restores trashed domains when a property is restored', function (): void {
+    $property = Tenant::factory()->create();
+    $domain = TenantDomain::factory()->for($property)->create(['status' => true]);
 
-    $website->delete();
-    $website->restore();
+    $property->delete();
+    $property->restore();
 
-    expect($website->fresh()?->trashed())->toBeFalse()
-        ->and($website->execute(fn() => $website->tenantDomains()->whereKey($domain->getKey())->exists()))->toBeTrue();
+    expect($property->fresh()?->trashed())->toBeFalse()
+        ->and($property->execute(fn() => $property->tenantDomains()->whereKey($domain->getKey())->exists()))->toBeTrue();
 });
 
-it('permanently removes domains when a website is force-deleted', function (): void {
-    $website = Tenant::factory()->create();
-    $domain = TenantDomain::factory()->for($website)->create();
+it('permanently removes domains when a property is force-deleted', function (): void {
+    $property = Tenant::factory()->create();
+    $domain = TenantDomain::factory()->for($property)->create();
 
-    $website->forceDelete();
+    $property->forceDelete();
 
-    expect(Tenant::withTrashed()->whereKey($website->getKey())->exists())->toBeFalse()
+    expect(Tenant::withTrashed()->whereKey($property->getKey())->exists())->toBeFalse()
         ->and(TenantDomain::withTrashed()->whereKey($domain->getKey())->exists())->toBeFalse();
 });

@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Actions;
 
+use Illuminate\Support\Facades\Validator;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Models\TenantDomain;
+use UnexpectedValueException;
 
 final class ReplaceTenantDomainAction
 {
     /**
-     * Replace a website's active domain, retaining the previous one as history.
+     * Replace a property's active domain, retaining the previous one as history.
      *
      * The current active domain (status = true) is demoted to a replaced
      * history record (status = false) and soft-deleted, so it stops resolving
@@ -20,7 +22,13 @@ final class ReplaceTenantDomainAction
      */
     public function execute(Tenant $tenant, string $domain): TenantDomain
     {
-        return $tenant->execute(function () use ($tenant, $domain): TenantDomain {
+        $domain = TenantDomain::normalizeDomain($domain);
+        Validator::make(
+            ['domain' => $domain],
+            ['domain' => TenantDomain::activeDomainRules()],
+        )->validate();
+
+        $tenantDomain = $tenant->execute(function () use ($tenant, $domain): TenantDomain {
             $tenant->tenantDomains()
                 ->where('status', true)
                 ->get()
@@ -35,5 +43,11 @@ final class ReplaceTenantDomainAction
                 'status' => true,
             ]);
         });
+
+        if ( ! $tenantDomain instanceof TenantDomain) {
+            throw new UnexpectedValueException('Replacing a tenant domain did not return a domain model.');
+        }
+
+        return $tenantDomain;
     }
 }

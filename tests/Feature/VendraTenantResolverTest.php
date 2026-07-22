@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Support\VendraTenantResolver;
+use Misaf\VendraTenant\Tasks\SwitchAppTask;
 
 it('runs the callback in the tenant context and restores the previous context', function (): void {
     $tenant = Tenant::factory()->enabled()->create();
@@ -52,4 +57,27 @@ it('offers only enabled tenants as search options', function (): void {
         $other->getKey()   => 'globex',
     ])
         ->and($resolver->searchOptions('acme'))->toBe([$enabled->getKey() => 'acme-shop']);
+});
+
+it('uses the current tenant domain as the asset origin', function (): void {
+    Config::set('app.url', 'https://vendra.test');
+    Config::set('app.asset_url', 'https://vendra.test');
+    Config::set('filesystems.disks.public.url', '/storage');
+    URL::useOrigin('https://vendra.test');
+    URL::useAssetOrigin('https://vendra.test');
+
+    expect(Storage::disk('public')->url('fonts/inter.woff2'))->toBe('/storage/fonts/inter.woff2');
+
+    $this->app->instance('request', Request::create('https://seomasters.test/reseller'));
+
+    $task = new SwitchAppTask();
+    $task->makeCurrent(Tenant::factory()->enabled()->create());
+
+    expect(asset('css/filament/filament/app.css'))->toBe('https://seomasters.test/css/filament/filament/app.css')
+        ->and(Storage::disk('public')->url('fonts/inter.woff2'))->toBe('/storage/fonts/inter.woff2');
+
+    $task->forgetCurrent();
+
+    expect(asset('css/filament/filament/app.css'))->toBe('https://vendra.test/css/filament/filament/app.css')
+        ->and(Storage::disk('public')->url('fonts/inter.woff2'))->toBe('/storage/fonts/inter.woff2');
 });
