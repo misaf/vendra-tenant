@@ -26,12 +26,12 @@ use Spatie\Sluggable\SlugOptions;
  * @property string $name
  * @property string $description
  * @property string $slug
- * @property bool $status
+ * @property bool $active
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['reseller_id', 'name', 'description', 'slug', 'status'])]
+#[Fillable(['reseller_id', 'name', 'description', 'slug', 'active'])]
 #[UseFactory(TenantFactory::class)]
 final class Tenant extends SpatieTenant implements ShouldLogActivity
 {
@@ -45,8 +45,8 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
 
     /**
      * Cascade a property's domains through its own lifecycle so no orphaned
-     * domain keeps resolving. The active domain (status = true) follows the
-     * property; replaced history domains (status = false, already trashed) are
+     * domain keeps resolving. The active domain (active = true) follows the
+     * property; replaced history domains (active = false, already trashed) are
      * left untouched on soft delete and only purged on force delete. Each
      * callback runs in the tenant's own context so
      * {@see TenantScope} on the domains resolves to
@@ -62,12 +62,12 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
                     return;
                 }
 
-                $tenant->tenantDomains()->where('status', true)->delete();
+                $tenant->tenantDomains()->where('active', true)->delete();
             });
         });
 
         static::restored(function (Tenant $tenant): void {
-            $tenant->execute(fn() => $tenant->tenantDomains()->onlyTrashed()->where('status', true)->restore());
+            $tenant->execute(fn() => $tenant->tenantDomains()->onlyTrashed()->where('active', true)->restore());
         });
     }
 
@@ -82,7 +82,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
             'name'        => 'string',
             'description' => 'string',
             'slug'        => 'string',
-            'status'      => 'boolean',
+            'active'      => 'boolean',
         ];
     }
 
@@ -92,7 +92,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
      */
     public function scopeEnabled(Builder $query): Builder
     {
-        return $query->where('status', true);
+        return $query->where('active', true);
     }
 
     /**
@@ -101,7 +101,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
      */
     public function scopeDisabled(Builder $query): Builder
     {
-        return $query->where('status', false);
+        return $query->where('active', false);
     }
 
     /**
@@ -130,7 +130,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
      */
     public function activeDomainName(): ?string
     {
-        return $this->domains()->where('status', true)->value('name');
+        return $this->domains()->where('active', true)->value('name');
     }
 
     public function getSlugOptions(): SlugOptions

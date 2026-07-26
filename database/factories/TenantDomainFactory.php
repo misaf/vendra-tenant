@@ -26,7 +26,7 @@ final class TenantDomainFactory extends Factory
             'name'        => fake()->unique()->sentence(3),
             'description' => fake()->text(),
             'slug'        => fn(array $attributes) => Str::slug($attributes['name']),
-            'status'      => fake()->boolean(),
+            'active'      => fake()->boolean(),
         ];
     }
 

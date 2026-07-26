@@ -24,17 +24,17 @@ final class TenantFactory extends Factory
             'name'        => fake()->unique()->sentence(3),
             'description' => fake()->text(),
             'slug'        => fn(array $attributes) => Str::slug($attributes['name']),
-            'status'      => fake()->boolean(),
+            'active'      => fake()->boolean(),
         ];
     }
 
     public function enabled(): static
     {
-        return $this->state(fn(): array => ['status' => true]);
+        return $this->state(fn(): array => ['active' => true]);
     }
 
     public function disabled(): static
     {
-        return $this->state(fn(): array => ['status' => false]);
+        return $this->state(fn(): array => ['active' => false]);
     }
 }

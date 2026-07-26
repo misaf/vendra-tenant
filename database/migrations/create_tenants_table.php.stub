@@ -29,7 +29,7 @@ return new class () extends Migration {
                 ->nullable();
             $table->string('slug')
                 ->index();
-            $table->boolean('status')
+            $table->boolean('active')
                 ->index();
             $table->timestampsTz();
             $table->softDeletesTz();
@@ -65,13 +65,13 @@ return new class () extends Migration {
                 ->nullable();
             $table->string('slug')
                 ->index();
-            $table->boolean('status')
+            $table->boolean('active')
                 ->index();
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->string('active_name_guard')
                 ->nullable()
-                ->virtualAs('CASE WHEN status = 1 AND deleted_at IS NULL THEN name ELSE NULL END');
+                ->virtualAs('CASE WHEN active = 1 AND deleted_at IS NULL THEN name ELSE NULL END');
             $table->unique('active_name_guard', 'tenant_domains_active_name_unique');
         });
     }

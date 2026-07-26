@@ -27,12 +27,12 @@ use Spatie\Sluggable\SlugOptions;
  * @property string $name
  * @property string $description
  * @property string $slug
- * @property bool $status
+ * @property bool $active
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['name', 'description', 'slug', 'status'])]
+#[Fillable(['name', 'description', 'slug', 'active'])]
 #[UseFactory(TenantDomainFactory::class)]
 final class TenantDomain extends Model implements ShouldLogActivity
 {
@@ -57,7 +57,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
             'name'        => 'string',
             'description' => 'string',
             'slug'        => 'string',
-            'status'      => 'boolean',
+            'active'      => 'boolean',
         ];
     }
 
@@ -67,7 +67,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
      */
     public function scopeEnabled(Builder $query): Builder
     {
-        return $query->where('status', true);
+        return $query->where('active', true);
     }
 
     /**
@@ -76,7 +76,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
      */
     public function scopeDisabled(Builder $query): Builder
     {
-        return $query->where('status', false);
+        return $query->where('active', false);
     }
 
     /**
@@ -89,7 +89,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
             'string',
             'max:255',
             'regex:' . self::DOMAIN_PATTERN,
-            Rule::unique(self::class, 'name')->where('status', true)->withoutTrashed(),
+            Rule::unique(self::class, 'name')->where('active', true)->withoutTrashed(),
         ];
     }
 

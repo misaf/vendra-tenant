@@ -14,8 +14,8 @@ final class ReplaceTenantDomainAction
     /**
      * Replace a property's active domain, retaining the previous one as history.
      *
-     * The current active domain (status = true) is demoted to a replaced
-     * history record (status = false) and soft-deleted, so it stops resolving
+     * The current active domain (active = true) is demoted to a replaced
+     * history record (active = false) and soft-deleted, so it stops resolving
      * but stays visible behind the trashed filter. A fresh active domain is
      * then created. Runs in the tenant's own context so the domain records are
      * scoped to this tenant regardless of the currently active tenant.
@@ -30,17 +30,17 @@ final class ReplaceTenantDomainAction
 
         $tenantDomain = $tenant->execute(function () use ($tenant, $domain): TenantDomain {
             $tenant->tenantDomains()
-                ->where('status', true)
+                ->where('active', true)
                 ->get()
                 ->each(function (TenantDomain $current): void {
-                    $current->forceFill(['status' => false])->save();
+                    $current->forceFill(['active' => false])->save();
                     $current->delete();
                 });
 
             return $tenant->tenantDomains()->create([
                 'name'   => $domain,
                 'slug'   => $domain,
-                'status' => true,
+                'active' => true,
             ]);
         });
 

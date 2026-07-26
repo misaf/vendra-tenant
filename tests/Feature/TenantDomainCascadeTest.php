@@ -8,7 +8,7 @@ use Misaf\VendraTenant\Models\TenantDomain;
 it('soft-deletes a property domains even when another tenant is current', function (): void {
     $current = Tenant::factory()->create();
     $property = Tenant::factory()->create();
-    $domain = TenantDomain::factory()->for($property)->create(['status' => true]);
+    $domain = TenantDomain::factory()->for($property)->create(['active' => true]);
 
     switchToTestTenant($current);
 
@@ -22,7 +22,7 @@ it('soft-deletes a property domains even when another tenant is current', functi
 
 it('restores trashed domains when a property is restored', function (): void {
     $property = Tenant::factory()->create();
-    $domain = TenantDomain::factory()->for($property)->create(['status' => true]);
+    $domain = TenantDomain::factory()->for($property)->create(['active' => true]);
 
     $property->delete();
     $property->restore();

@@ -52,7 +52,7 @@ final class DomainTenantFinder extends SpatieTenantFinder
             ->enabled()
             ->whereHas('tenantDomains', fn(Builder $query): Builder => $query
                 ->where('name', Str::lower($host))
-                ->where('status', true))
+                ->where('active', true))
             ->first();
     }
 }

@@ -10,7 +10,7 @@ it('authorizes certificates for an enabled tenant domain from localhost', functi
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'shop.example.com',
-        'status' => true,
+        'active' => true,
     ]);
 
     $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
@@ -26,7 +26,7 @@ it('authorizes canonical and custom admin domains from localhost', function (str
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'acme.example.com',
-        'status' => true,
+        'active' => true,
     ]);
 
     $this->withServerVariables(['REMOTE_ADDR' => '127.0.0.1'])
@@ -51,7 +51,7 @@ it('rejects domains that are not eligible for certificates', function (Closure $
 
         TenantDomain::factory()->for($tenant)->create([
             'name'   => 'disabled.example.com',
-            'status' => false,
+            'active' => false,
         ]);
     }, 'disabled.example.com'],
     'disabled tenant' => [function (): void {
@@ -59,7 +59,7 @@ it('rejects domains that are not eligible for certificates', function (Closure $
 
         TenantDomain::factory()->for($tenant)->create([
             'name'   => 'inactive.example.com',
-            'status' => true,
+            'active' => true,
         ]);
     }, 'inactive.example.com'],
 ]);
@@ -69,7 +69,7 @@ it('does not expose certificate authorization publicly', function (): void {
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'shop.example.com',
-        'status' => true,
+        'active' => true,
     ]);
 
     $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.10'])
