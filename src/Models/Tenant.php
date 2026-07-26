@@ -77,12 +77,12 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
     protected function casts(): array
     {
         return [
-            'id'           => 'integer',
-            'reseller_id'  => 'integer',
-            'name'         => 'string',
-            'description'  => 'string',
-            'slug'         => 'string',
-            'status'       => 'boolean',
+            'id'          => 'integer',
+            'reseller_id' => 'integer',
+            'name'        => 'string',
+            'description' => 'string',
+            'slug'        => 'string',
+            'status'      => 'boolean',
         ];
     }
 
