@@ -33,7 +33,7 @@ final class DomainTenantFinder extends SpatieTenantFinder
 
             if ('' !== $tenantSlug && ! str_contains($tenantSlug, '.')) {
                 return Tenant::query()
-                    ->enabled()
+                    ->accessible()
                     ->where('slug', $tenantSlug)
                     ->first();
             }
@@ -49,7 +49,7 @@ final class DomainTenantFinder extends SpatieTenantFinder
     private function findForTenantDomain(string $host): ?IsTenant
     {
         return Tenant::query()
-            ->enabled()
+            ->accessible()
             ->whereHas('tenantDomains', fn(Builder $query): Builder => $query
                 ->where('name', Str::lower($host))
                 ->where('active', true))

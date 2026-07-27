@@ -31,6 +31,24 @@ return new class () extends Migration {
                 ->index();
             $table->boolean('active')
                 ->index();
+            $table->timestampTz('billing_suspended_at')
+                ->nullable()
+                ->index();
+            $table->string('provisioning_status')
+                ->default('ready')
+                ->index();
+            $table->boolean('provisioning_should_seed')
+                ->default(false);
+            $table->timestampTz('provisioning_seeded_at')
+                ->nullable();
+            $table->timestampTz('routes_cached_at')
+                ->nullable();
+            $table->timestampTz('provisioned_at')
+                ->nullable();
+            $table->timestampTz('provisioning_failed_at')
+                ->nullable();
+            $table->text('provisioning_error')
+                ->nullable();
             $table->timestampsTz();
             $table->softDeletesTz();
         });

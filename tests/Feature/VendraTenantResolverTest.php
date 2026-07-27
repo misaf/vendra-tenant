@@ -48,6 +48,10 @@ it('runs the callback within every tenant context and restores the previous one'
 it('offers only enabled tenants as search options', function (): void {
     $enabled = Tenant::factory()->enabled()->create(['slug' => 'acme-shop']);
     Tenant::factory()->disabled()->create(['slug' => 'acme-archive']);
+    Tenant::factory()->enabled()->create([
+        'slug'                 => 'acme-billing-suspended',
+        'billing_suspended_at' => now(),
+    ]);
     $other = Tenant::factory()->enabled()->create(['slug' => 'globex']);
 
     $resolver = new VendraTenantResolver();

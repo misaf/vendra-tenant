@@ -7,6 +7,7 @@ namespace Misaf\VendraTenant\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use Misaf\VendraTenant\Enums\TenantProvisioningStatus;
 use Misaf\VendraTenant\Models\Tenant;
 
 /**
@@ -21,10 +22,14 @@ final class TenantFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'        => fake()->unique()->sentence(3),
-            'description' => fake()->text(),
-            'slug'        => fn(array $attributes) => Str::slug($attributes['name']),
-            'active'      => fake()->boolean(),
+            'name'                     => fake()->unique()->sentence(3),
+            'description'              => fake()->text(),
+            'slug'                     => fn(array $attributes) => Str::slug($attributes['name']),
+            'active'                   => fake()->boolean(),
+            'billing_suspended_at'     => null,
+            'provisioning_status'      => TenantProvisioningStatus::Ready,
+            'provisioning_should_seed' => false,
+            'provisioned_at'           => now(),
         ];
     }
 

@@ -87,7 +87,7 @@ final class VendraTenantResolver implements TenantResolver
 
         $tenants = Tenant::query()
             ->select(['id', 'slug'])
-            ->enabled()
+            ->accessible()
             ->when('' !== $search, fn(Builder $query): Builder => $query->where('slug', 'like', "%{$search}%"))
             ->limit($limit)
             ->get();

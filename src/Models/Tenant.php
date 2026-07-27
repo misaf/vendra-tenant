@@ -16,6 +16,7 @@ use Misaf\VendraSupport\Contracts\ShouldLogActivity;
 use Misaf\VendraSupport\Scopes\TeamScope;
 use Misaf\VendraSupport\Scopes\TenantScope;
 use Misaf\VendraTenant\Database\Factories\TenantFactory;
+use Misaf\VendraTenant\Enums\TenantProvisioningStatus;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -27,11 +28,19 @@ use Spatie\Sluggable\SlugOptions;
  * @property string $description
  * @property string $slug
  * @property bool $active
+ * @property Carbon|null $billing_suspended_at
+ * @property TenantProvisioningStatus $provisioning_status
+ * @property bool $provisioning_should_seed
+ * @property Carbon|null $provisioning_seeded_at
+ * @property Carbon|null $routes_cached_at
+ * @property Carbon|null $provisioned_at
+ * @property Carbon|null $provisioning_failed_at
+ * @property string|null $provisioning_error
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Fillable(['reseller_id', 'name', 'description', 'slug', 'active'])]
+#[Fillable(['reseller_id', 'name', 'description', 'slug', 'active', 'provisioning_status', 'provisioning_should_seed'])]
 #[UseFactory(TenantFactory::class)]
 final class Tenant extends SpatieTenant implements ShouldLogActivity
 {
@@ -77,12 +86,20 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
     protected function casts(): array
     {
         return [
-            'id'          => 'integer',
-            'reseller_id' => 'integer',
-            'name'        => 'string',
-            'description' => 'string',
-            'slug'        => 'string',
-            'active'      => 'boolean',
+            'id'                       => 'integer',
+            'reseller_id'              => 'integer',
+            'name'                     => 'string',
+            'description'              => 'string',
+            'slug'                     => 'string',
+            'active'                   => 'boolean',
+            'billing_suspended_at'     => 'datetime',
+            'provisioning_status'      => TenantProvisioningStatus::class,
+            'provisioning_should_seed' => 'boolean',
+            'provisioning_seeded_at'   => 'datetime',
+            'routes_cached_at'         => 'datetime',
+            'provisioned_at'           => 'datetime',
+            'provisioning_failed_at'   => 'datetime',
+            'provisioning_error'       => 'string',
         ];
     }
 
@@ -102,6 +119,20 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
     public function scopeDisabled(Builder $query): Builder
     {
         return $query->where('active', false);
+    }
+
+    /**
+     * Limit the query to tenants that may currently serve requests.
+     *
+     * @param  Builder<Tenant>  $query
+     * @return Builder<Tenant>
+     */
+    public function scopeAccessible(Builder $query): Builder
+    {
+        return $query
+            ->enabled()
+            ->whereNull('billing_suspended_at')
+            ->where('provisioning_status', TenantProvisioningStatus::Ready);
     }
 
     /**
