@@ -63,6 +63,8 @@ php artisan tenants:artisan route:cache
 
 ## Testing
 
+Run the package checks from the package directory:
+
 ```bash
 composer test
 composer analyse

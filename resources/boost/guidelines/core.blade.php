@@ -2,8 +2,6 @@
 
 The `misaf/vendra-tenant` package is the concrete multi-tenancy **provider**. Installing it makes the application tenant-aware by binding a real `TenantResolver` over the support layer's default null resolver.
 
-### Standards
-
 ### Translatable Persistence
 
 - Making a persisted model field translatable is an explicit domain choice unless this package already requires it.
