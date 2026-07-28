@@ -107,7 +107,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
      * @param  Builder<Tenant>  $query
      * @return Builder<Tenant>
      */
-    public function scopeEnabled(Builder $query): Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
     }
@@ -116,7 +116,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
      * @param  Builder<Tenant>  $query
      * @return Builder<Tenant>
      */
-    public function scopeDisabled(Builder $query): Builder
+    public function scopeInactive(Builder $query): Builder
     {
         return $query->where('active', false);
     }
@@ -130,7 +130,7 @@ final class Tenant extends SpatieTenant implements ShouldLogActivity
     public function scopeAccessible(Builder $query): Builder
     {
         return $query
-            ->enabled()
+            ->active()
             ->whereNull('billing_suspended_at')
             ->where('provisioning_status', TenantProvisioningStatus::Ready);
     }

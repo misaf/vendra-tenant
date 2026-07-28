@@ -65,7 +65,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
      * @param  Builder<TenantDomain>  $query
      * @return Builder<TenantDomain>
      */
-    public function scopeEnabled(Builder $query): Builder
+    public function scopeActive(Builder $query): Builder
     {
         return $query->where('active', true);
     }
@@ -74,7 +74,7 @@ final class TenantDomain extends Model implements ShouldLogActivity
      * @param  Builder<TenantDomain>  $query
      * @return Builder<TenantDomain>
      */
-    public function scopeDisabled(Builder $query): Builder
+    public function scopeInactive(Builder $query): Builder
     {
         return $query->where('active', false);
     }

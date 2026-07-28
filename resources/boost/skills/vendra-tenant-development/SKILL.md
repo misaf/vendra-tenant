@@ -43,7 +43,7 @@ Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
 - Keep `vendra-tenant:enable {tenant}` as the explicit installation-order recovery path. Consume `TenantTableRegistry` from Support; never hard-code domain package tables inside Vendra Tenant.
 - Require an existing tenant ID or slug before mutating schemas. Add missing `tenant_id` columns as nullable, backfill only unscoped rows to the selected tenant, add the tenant index, enforce non-nullability, clear `TenantSchema` caches, and keep reruns idempotent.
 - Preserve registered database connections so tables such as Activity Log are retrofitted on the same connection used by their migrations. Keep interactive confirmation by default and reserve `--force` for intentional non-interactive execution.
-- Keep `searchOptions` scoped to enabled tenants (the `Tenant::enabled()` scope on `active`); tenant pickers and prompts must never offer disabled tenants.
+- Keep `searchOptions` scoped to active tenants (the `Tenant::active()` scope on `active`); tenant pickers and prompts must never offer inactive tenants.
 - Keep tenant context switching (Spatie tasks such as `SwitchAppTask` / `SwitchMailTask`) inside this module.
 - Keep Spatie's `SwitchRouteCacheTask` with separate cache files per tenant and generate them with `php artisan tenants:artisan route:cache`; do not add a custom route-cache switching task. In tests, remove only this task from the configured switch tasks so factory-created tenants do not require cache files.
 - Keep domain resolution (`DomainTenantFinder`) and any tenant Filament wiring (`TenantPlugin`) here.

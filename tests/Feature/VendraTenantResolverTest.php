@@ -11,7 +11,7 @@ use Misaf\VendraTenant\Support\VendraTenantResolver;
 use Misaf\VendraTenant\Tasks\SwitchAppTask;
 
 it('runs the callback in the tenant context and restores the previous context', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = Tenant::factory()->active()->create();
 
     expect(Tenant::current())->toBeNull();
 
@@ -30,8 +30,8 @@ it('throws when the tenant cannot be resolved for execution', function (): void 
 });
 
 it('runs the callback within every tenant context and restores the previous one', function (): void {
-    $first = Tenant::factory()->enabled()->create();
-    $second = Tenant::factory()->enabled()->create();
+    $first = Tenant::factory()->active()->create();
+    $second = Tenant::factory()->active()->create();
 
     expect(Tenant::current())->toBeNull();
 
@@ -45,22 +45,22 @@ it('runs the callback within every tenant context and restores the previous one'
         ->and(Tenant::current())->toBeNull();
 });
 
-it('offers only enabled tenants as search options', function (): void {
-    $enabled = Tenant::factory()->enabled()->create(['slug' => 'acme-shop']);
-    Tenant::factory()->disabled()->create(['slug' => 'acme-archive']);
-    Tenant::factory()->enabled()->create([
+it('offers only active tenants as search options', function (): void {
+    $active = Tenant::factory()->active()->create(['slug' => 'acme-shop']);
+    Tenant::factory()->inactive()->create(['slug' => 'acme-archive']);
+    Tenant::factory()->active()->create([
         'slug'                 => 'acme-billing-suspended',
         'billing_suspended_at' => now(),
     ]);
-    $other = Tenant::factory()->enabled()->create(['slug' => 'globex']);
+    $other = Tenant::factory()->active()->create(['slug' => 'globex']);
 
     $resolver = new VendraTenantResolver();
 
     expect($resolver->searchOptions(''))->toBe([
-        $enabled->getKey() => 'acme-shop',
-        $other->getKey()   => 'globex',
+        $active->getKey() => 'acme-shop',
+        $other->getKey()  => 'globex',
     ])
-        ->and($resolver->searchOptions('acme'))->toBe([$enabled->getKey() => 'acme-shop']);
+        ->and($resolver->searchOptions('acme'))->toBe([$active->getKey() => 'acme-shop']);
 });
 
 it('uses the current tenant domain as the asset origin', function (): void {
@@ -75,7 +75,7 @@ it('uses the current tenant domain as the asset origin', function (): void {
     $this->app->instance('request', Request::create('https://seomasters.test/reseller'));
 
     $task = new SwitchAppTask();
-    $task->makeCurrent(Tenant::factory()->enabled()->create());
+    $task->makeCurrent(Tenant::factory()->active()->create());
 
     expect(asset('css/filament/filament/app.css'))->toBe('https://seomasters.test/css/filament/filament/app.css')
         ->and(Storage::disk('public')->url('fonts/inter.woff2'))->toBe('/storage/fonts/inter.woff2');

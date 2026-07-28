@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Models\TenantDomain;
 
-it('authorizes certificates for an enabled tenant domain from localhost', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+it('authorizes certificates for an active tenant domain from localhost', function (): void {
+    $tenant = Tenant::factory()->active()->create();
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'shop.example.com',
@@ -22,7 +22,7 @@ it('authorizes canonical and custom admin domains from localhost', function (str
     config()->set('app.url', 'https://vendra.test');
     config()->set('vendra-tenant.central_host', 'vendra.test');
 
-    $tenant = Tenant::factory()->enabled()->create(['slug' => 'acme']);
+    $tenant = Tenant::factory()->active()->create(['slug' => 'acme']);
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'acme.example.com',
@@ -46,16 +46,16 @@ it('rejects domains that are not eligible for certificates', function (Closure $
 })->with([
     'unknown domain'  => [fn(): null => null, 'unknown.example.com'],
     'invalid domain'  => [fn(): null => null, 'https://shop.example.com'],
-    'disabled domain' => [function (): void {
-        $tenant = Tenant::factory()->enabled()->create();
+    'inactive domain' => [function (): void {
+        $tenant = Tenant::factory()->active()->create();
 
         TenantDomain::factory()->for($tenant)->create([
             'name'   => 'disabled.example.com',
             'active' => false,
         ]);
     }, 'disabled.example.com'],
-    'disabled tenant' => [function (): void {
-        $tenant = Tenant::factory()->disabled()->create();
+    'inactive tenant' => [function (): void {
+        $tenant = Tenant::factory()->inactive()->create();
 
         TenantDomain::factory()->for($tenant)->create([
             'name'   => 'inactive.example.com',
@@ -65,7 +65,7 @@ it('rejects domains that are not eligible for certificates', function (Closure $
 ]);
 
 it('does not expose certificate authorization publicly', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = Tenant::factory()->active()->create();
 
     TenantDomain::factory()->for($tenant)->create([
         'name'   => 'shop.example.com',

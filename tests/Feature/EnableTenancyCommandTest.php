@@ -23,7 +23,7 @@ afterEach(function (): void {
 });
 
 it('retrofits and backfills tables migrated before tenancy was installed', function (): void {
-    $tenant = Tenant::factory()->enabled()->create(['slug' => 'legacy-shop']);
+    $tenant = Tenant::factory()->active()->create(['slug' => 'legacy-shop']);
     DB::table('legacy_tenant_records')->insert(['name' => 'Legacy record']);
 
     expect(TenantSchema::hasTenantColumn('legacy_tenant_records'))->toBeFalse();
@@ -46,7 +46,7 @@ it('retrofits and backfills tables migrated before tenancy was installed', funct
 });
 
 it('is idempotent after a table has been retrofitted', function (): void {
-    $tenant = Tenant::factory()->enabled()->create();
+    $tenant = Tenant::factory()->active()->create();
 
     $arguments = [
         'tenant'  => (string) $tenant->getKey(),
