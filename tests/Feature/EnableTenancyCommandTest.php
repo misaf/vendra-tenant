@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Misaf\VendraSupport\Support\TenantSchema;
-use Misaf\VendraSupport\Support\TenantTableRegistry;
+use Misaf\VendraSupport\Tenancy\TenantSchema;
+use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
 use Misaf\VendraTenant\Models\Tenant;
 
 beforeEach(function (): void {
