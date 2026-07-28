@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
+use Misaf\VendraSupport\Context\RequestJobContext;
 use RuntimeException;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
 
@@ -32,6 +33,15 @@ final class CacheTenantRoutesJob implements NotTenantAware, ShouldQueue
     public function __construct(private readonly int $tenantId) {}
 
     public function handle(): void
+    {
+        (new RequestJobContext(
+            traceId: RequestJobContext::resolveTraceId(),
+            operation: 'tenant_route_cache',
+            tenantId: $this->tenantId,
+        ))->scope(fn() => $this->cacheRoutes());
+    }
+
+    private function cacheRoutes(): void
     {
         $exitCode = Artisan::call('tenants:artisan', [
             'artisanCommand' => 'route:cache',
