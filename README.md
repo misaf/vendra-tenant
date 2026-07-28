@@ -13,7 +13,9 @@ packages remain coupled only to `misaf/vendra-support`.
 - Domain-based tenant discovery
 - Application and mail configuration switch tasks
 - Per-tenant route caches
-- Filament tenant management integration
+- Provisioning state and request-accessibility scopes
+- Active-domain replacement with retained domain history
+- Loopback-only Caddy on-demand TLS domain authorization
 - Recovery command for domain tables migrated before tenancy was enabled
 
 ## Requirements
@@ -40,6 +42,11 @@ php artisan vendor:publish --tag=vendra-tenant-translations
 
 Tenant provisioning belongs to the host application. Domain modules discover
 the active tenant only through the resolver supplied by this package.
+
+`config/vendra-tenant.php` derives `central_host` from `APP_URL`. The registered
+`GET /caddy/domain-check?domain=…` route authorizes only known tenant domains and
+only accepts loopback requests; expose it to Caddy through the local reverse
+proxy, not directly to the public internet.
 
 ## Enabling Tenancy After Domain Migrations
 
