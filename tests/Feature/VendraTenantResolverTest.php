@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Misaf\VendraSupport\Context\RequestJobContext;
 use Misaf\VendraTenant\Models\Tenant;
 use Misaf\VendraTenant\Support\VendraTenantResolver;
 use Misaf\VendraTenant\Tasks\SwitchAppTask;
@@ -22,6 +24,18 @@ it('runs the callback in the tenant context and restores the previous context', 
 
     expect($result)->toBe($tenant->getKey())
         ->and(Tenant::current())->toBeNull();
+});
+
+it('tracks the current tenant across request and job context switches', function (): void {
+    $tenant = Tenant::factory()->active()->create();
+
+    expect(Context::has(RequestJobContext::TENANT_ID))->toBeFalse();
+
+    $tenant->execute(function () use ($tenant): void {
+        expect(RequestJobContext::current()->tenantId)->toBe($tenant->getKey());
+    });
+
+    expect(Context::has(RequestJobContext::TENANT_ID))->toBeFalse();
 });
 
 it('throws when the tenant cannot be resolved for execution', function (): void {
