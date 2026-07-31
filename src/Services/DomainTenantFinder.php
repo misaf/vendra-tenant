@@ -46,6 +46,25 @@ final class DomainTenantFinder extends SpatieTenantFinder
         return null;
     }
 
+    /**
+     * Resolve the tenant that owns a storefront origin, e.g. "https://shop.com".
+     *
+     * The canonical API answers on one host for every property, so a storefront
+     * identifies itself by the origin it calls from — the same active tenant
+     * domain data that backs the CORS allowlist. Admin host shapes are
+     * deliberately not accepted here: an origin is not an admin surface.
+     */
+    public function findForOrigin(string $origin): ?IsTenant
+    {
+        $host = parse_url($origin, PHP_URL_HOST);
+
+        if ( ! is_string($host) || '' === $host) {
+            return null;
+        }
+
+        return $this->findForTenantDomain($host);
+    }
+
     private function findForTenantDomain(string $host): ?IsTenant
     {
         return Tenant::query()
