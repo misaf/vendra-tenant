@@ -7,9 +7,18 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraTenant\Tests\Fixtures\Workspace;
 
 beforeEach(function (): void {
+    config()->set('vendra-tenant.model', Workspace::class);
+
+    Schema::create('workspaces', function (Blueprint $table): void {
+        $table->id('uuid');
+        $table->string('name');
+        $table->string('handle');
+        $table->boolean('active')->default(true);
+    });
+
     Schema::create('legacy_tenant_records', function (Blueprint $table): void {
         $table->id();
         $table->string('name');
@@ -19,11 +28,19 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
+    Workspace::forgetCurrent();
+
     Schema::dropIfExists('legacy_tenant_records');
+    Schema::dropIfExists('workspaces');
 });
 
+function legacyWorkspace(string $handle): Workspace
+{
+    return Workspace::query()->create(['name' => ucfirst($handle), 'handle' => $handle, 'active' => true]);
+}
+
 it('retrofits and backfills tables migrated before tenancy was installed', function (): void {
-    $tenant = Tenant::factory()->active()->create(['slug' => 'legacy-shop']);
+    $tenant = legacyWorkspace('legacy-shop');
     DB::table('legacy_tenant_records')->insert(['name' => 'Legacy record']);
 
     expect(TenantSchema::hasTenantColumn('legacy_tenant_records'))->toBeFalse();
@@ -46,7 +63,7 @@ it('retrofits and backfills tables migrated before tenancy was installed', funct
 });
 
 it('is idempotent after a table has been retrofitted', function (): void {
-    $tenant = Tenant::factory()->active()->create();
+    $tenant = legacyWorkspace('acme');
 
     $arguments = [
         'tenant'  => (string) $tenant->getKey(),

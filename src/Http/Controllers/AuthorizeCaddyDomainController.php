@@ -6,11 +6,11 @@ namespace Misaf\VendraTenant\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Misaf\VendraTenant\Services\DomainTenantFinder;
+use Misaf\VendraTenant\Contracts\HostTenantFinder;
 
 final readonly class AuthorizeCaddyDomainController
 {
-    public function __construct(private DomainTenantFinder $tenantFinder) {}
+    public function __construct(private HostTenantFinder $tenantFinder) {}
 
     public function __invoke(Request $request): Response
     {

@@ -6,7 +6,7 @@ namespace Misaf\VendraTenant\Tasks;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
@@ -47,15 +47,12 @@ final class SwitchAppTask implements SwitchTenantTask
         URL::useAssetOrigin($this->originalAssetUrl);
     }
 
-    /**
-     * @param  Tenant  $tenant
-     */
     public function makeCurrent(IsTenant $tenant): void
     {
         $appUrl = request()->schemeAndHttpHost();
 
         Config::set('app.locale', 'fa');
-        Config::set('app.name', $tenant->name);
+        Config::set('app.name', $tenant instanceof TenantContract ? $tenant->getTenantName() : $this->originalName);
         Config::set('livewire.navigate.progress_bar_color', '#f59e0b');
         Config::set('app.timezone', 'Asia/Tehran');
         Config::set('app.url', $appUrl);

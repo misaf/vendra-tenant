@@ -1,6 +1,6 @@
 ---
 name: vendra-tenant-development
-description: "Create, modify, review, or test the Vendra Tenant provider module in packages/vendra-tenant. Use for the Tenant / TenantDomain models, provisioning accessibility and billing suspension, VendraTenantResolver, DomainTenantFinder, ReplaceTenantDomainAction, Caddy on-demand TLS domain authorization, SwitchAppTask / SwitchMailTask, TenantServiceProvider, EnableTenancyAction, the vendra-tenant:enable command, TenantTableRegistry schema retrofits, Spatie multitenancy wiring, and the TenantResolver binding that enables tenant awareness."
+description: "Create, modify, review, or test the generic Vendra Tenant engine in packages/vendra-tenant. Use for TenantContract, IsTenantModel, HostTenantFinder, NullHostTenantFinder, ConfiguredTenantResolver, the configurable tenant model and foreign key, TenantProvisioningStatus, Caddy on-demand TLS domain authorization, EnsureAdminDomain, SwitchAppTask / SwitchMailTask, CacheTenantRoutesJob, TenantServiceProvider, EnableTenancyAction, the vendra-tenant:enable command, TenantTableRegistry schema retrofits, Spatie multitenancy wiring, and the TenantResolver binding that enables tenant awareness."
 ---
 
 # Vendra Tenant
@@ -28,31 +28,33 @@ description: "Create, modify, review, or test the Vendra Tenant provider module 
 
 ## Module Boundary
 
-Treat `packages/vendra-tenant` as the concrete multi-tenancy provider.
+Treat `packages/vendra-tenant` as the **generic multi-tenancy engine**. Tenant is a technical role, not a business entity: this module owns the mechanism and never the model that plays it.
 
 - Use namespace `Misaf\VendraTenant`.
-- Own the concrete `Tenant` and `TenantDomain` models, `VendraTenantResolver`, `DomainTenantFinder`, `ReplaceTenantDomainAction`, `AuthorizeCaddyDomainController`, the switch tasks, `Jobs\CacheTenantRoutesJob` (implements Spatie `NotTenantAware`), `EnableTenancyAction`, `EnableTenancyCommand`, and `TenantServiceProvider` here. The `tenants` table carries a nullable `reseller_id` (a billing reseller owned by the host app, `App\Models\Reseller`) as a plain indexed column with no FK or `Tenant` relation; the inverse relation lives on the host model.
+- Own `Contracts\TenantContract`, `Contracts\HostTenantFinder`, `Concerns\IsTenantModel`, `Support\ConfiguredTenantResolver`, `Support\NullHostTenantFinder`, `Enums\TenantProvisioningStatus`, `Http\Middleware\EnsureAdminDomain`, `Http\Controllers\AuthorizeCaddyDomainController`, the switch tasks, `Jobs\CacheTenantRoutesJob` (implements Spatie `NotTenantAware`), `EnableTenancyAction`, `EnableTenancyCommand`, and `TenantServiceProvider`.
+- **Own no concrete tenant model, and name no business one.** Never import `Misaf\VendraStore`, `Misaf\VendraReseller`, `Misaf\VendraConsole`, or `Misaf\VendraSubscription` — in source, config defaults, or tests. In Vendra the configured model is `Misaf\VendraStore\Models\Store`, and `Store::accessible()`, the store domains and `ReplaceStoreDomainAction` all live in `misaf/vendra-store`.
+- Read every business-shaped value from configuration: `vendra-tenant.model` and `vendra-tenant.foreign_key`. Go through `TenantSchema::column()` or the bound resolver; never hard-code `tenant_id`. Do not add a business-named relation alias: registering one into Eloquent's process-wide relation resolvers at model-boot time makes a model's API depend on whichever config was loaded when its class first booted, which breaks across tests and requests. The relation stays `tenant()`.
 - Make queued notifications and jobs dispatched from host-level console or reseller flows implement Spatie `NotTenantAware`. These flows have no current tenant, so the default tenant-aware queue listener may delete their jobs before handling even while Horizon reports them as completed.
-- This is the only module permitted to reference the concrete tenant model and Spatie multitenancy APIs.
-- No domain, API, or support module may depend on this package. Enabling tenancy is done by installing this provider, which binds `Misaf\VendraSupport\Contracts\TenantResolver` to `VendraTenantResolver`.
-- Module test suites must not import `Misaf\VendraTenant` either — they use the `misaf/vendra-testing` tenancy helpers (`makeCurrentTestTenant()`, `createTestTenant()`, `switchToTestTenant()`, …). Only this package's own tests may import the concrete tenant; the root `PackageManifestConsistencyTest` guard enforces it.
+- Only the package supplying the concrete tenant model (`misaf/vendra-store`) and the panels above it may depend on this package. Domain and API modules enable tenancy simply by having this provider installed, which binds `Misaf\VendraSupport\Contracts\TenantResolver` to `ConfiguredTenantResolver`.
+- Module test suites must not import `Misaf\VendraTenant` either — they use the `misaf/vendra-testing` tenancy helpers (`makeCurrentTestTenant()`, `createTestTenant()`, `switchToTestTenant()`, …). The root `PackageManifestConsistencyTest` guard enforces it.
 
 ## Provider Responsibilities
 
-- Bind `VendraTenantResolver` as the `TenantResolver` in `TenantServiceProvider`; it must implement every contract method (`available`, `current`, `currentId`, `modelClass`, `findByKeyOrSlug`, `makeCurrent`, `searchOptions`).
+- Bind `ConfiguredTenantResolver` as the `TenantResolver` in `TenantServiceProvider`; it must implement every contract method (`available`, `current`, `currentId`, `modelClass`, `foreignKey`, `findByKeyOrSlug`, `makeCurrent`, `execute`, `eachTenant`, `searchOptions`). Changing the contract means updating `NullTenantResolver` and the `mock(TenantResolver::class)` setups in other packages' tests in the same change.
+- Bind ports with `bindIf` and adapters with `bind`: `HostTenantFinder` defaults to `NullHostTenantFinder` here, and `misaf/vendra-store` binds `StoreDomainFinder` over it. Provider discovery is alphabetical, so a plain `bind` on the default would win.
+- Validate `vendra-tenant.model` where it is used: it must be an Eloquent model implementing `TenantContract`, or the resolver throws a pointed configuration error.
+- Treat business availability as the concrete model's business: apply an `accessible` scope when the configured model defines one, and list every tenant when it does not.
 - Keep `vendra-tenant:enable {tenant}` as the explicit installation-order recovery path. Consume `TenantTableRegistry` from Support; never hard-code domain package tables inside Vendra Tenant.
-- Require an existing tenant ID or slug before mutating schemas. Add missing `tenant_id` columns as nullable, backfill only unscoped rows to the selected tenant, add the tenant index, enforce non-nullability, clear `TenantSchema` caches, and keep reruns idempotent.
+- Require an existing tenant ID or slug before mutating schemas. Add the configured foreign key as nullable, backfill only unscoped rows to the selected tenant, add its index, enforce non-nullability, clear `TenantSchema` caches, and keep reruns idempotent.
 - Preserve registered database connections so tables such as Activity Log are retrofitted on the same connection used by their migrations. Keep interactive confirmation by default and reserve `--force` for intentional non-interactive execution.
-- Keep `searchOptions` and `DomainTenantFinder` scoped through `Tenant::accessible()`: tenants must be active, provisioning-ready, and not billing-suspended before pickers or host resolution may expose them.
-- Replace active domains through `ReplaceTenantDomainAction`; normalize and validate the replacement, retain the old domain as soft-deleted history, and create the new active domain inside the target tenant context.
-- Keep the named `GET /caddy/domain-check` route loopback-only and validate its hostname before resolving it through `DomainTenantFinder`. It authorizes Caddy certificates only for accessible tenant domains and must not become a public tenant lookup endpoint.
-- Keep tenant context switching (Spatie tasks such as `SwitchAppTask` / `SwitchMailTask`) inside this module.
+- Keep the named `GET /caddy/domain-check` route loopback-only and validate its hostname before resolving it through the bound `HostTenantFinder`. It authorizes Caddy certificates only for hosts that finder recognises and must not become a public tenant lookup endpoint.
+- Keep tenant context switching (Spatie tasks such as `SwitchAppTask` / `SwitchMailTask`) inside this module, and read tenant identity through `TenantContract` (`getTenantKey`, `getTenantName`, `getTenantSlug`) rather than concrete columns.
 - Keep Spatie's `SwitchRouteCacheTask` with separate cache files per tenant and generate them with `php artisan tenants:artisan route:cache`; do not add a custom route-cache switching task. In tests, remove only this task from the configured switch tasks so factory-created tenants do not require cache files.
-- Keep domain resolution (`DomainTenantFinder`) in this module.
 
 ## Testing And Verification
 
-- Keep tests purposeful: cover resolver contract conformance, domain resolution, tenant switching, missing-column retrofits, legacy-row backfills, index and nullability restoration, schema-cache refresh, invalid-tenant safety, and idempotency.
-- Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets. Do not add a `not->toUse('Misaf\VendraTenant')` expectation — this module intentionally references the concrete tenant.
+- Drive the suite through `tests/Fixtures/Workspace` — a tenant model with a different name, table and `workspace_id` foreign key — so a business assumption leaking into this package fails a test instead of passing quietly.
+- Keep tests purposeful: cover resolver contract conformance, configurable model and foreign key, context establish/restore, cross-tenant isolation, the business relation alias, missing-column retrofits, legacy-row backfills, index and nullability restoration, schema-cache refresh, invalid-tenant safety, and idempotency.
+- Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus the rules asserting this engine does not use `Misaf\VendraStore`, `Misaf\VendraReseller`, `Misaf\VendraConsole`, or `Misaf\VendraSubscription`.
 - Run module checks: `composer --working-dir=packages/vendra-tenant test` and `composer --working-dir=packages/vendra-tenant analyse`.
 - If PHP files changed, run `vendor/bin/pint --dirty --format agent`.

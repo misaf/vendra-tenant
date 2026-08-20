@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
 
+/**
+ * Retrofits the configured tenant foreign key onto tables that were migrated
+ * before a tenant provider was installed. The column name is read from
+ * {@see TenantSchema}, never assumed, so the same command retrofits `tenant_id`
+ * here and `company_id` in a Company-tenanted application.
+ */
 final class EnableTenancyAction
 {
     public function __construct(private readonly TenantTableRegistry $tenantTables) {}
@@ -39,31 +45,32 @@ final class EnableTenancyAction
     {
         $tables = [];
         $updatedRows = 0;
+        $foreignKey = TenantSchema::column();
 
         foreach ($this->pendingTables() as $definition) {
             $table = $definition['table'];
             $schema = $this->schema($definition['connection']);
             $connection = $this->connection($definition['connection']);
 
-            if ( ! $schema->hasColumn($table, 'tenant_id')) {
-                $schema->table($table, function (Blueprint $blueprint): void {
-                    $blueprint->unsignedBigInteger('tenant_id')->nullable();
+            if ( ! $schema->hasColumn($table, $foreignKey)) {
+                $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
+                    $blueprint->unsignedBigInteger($foreignKey)->nullable();
                 });
             }
 
             $updatedRows += $connection->table($table)
-                ->whereNull('tenant_id')
-                ->update(['tenant_id' => $tenantId]);
+                ->whereNull($foreignKey)
+                ->update([$foreignKey => $tenantId]);
 
-            if ( ! $schema->hasIndex($table, ['tenant_id'])) {
-                $schema->table($table, function (Blueprint $blueprint): void {
-                    $blueprint->index('tenant_id');
+            if ( ! $schema->hasIndex($table, [$foreignKey])) {
+                $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
+                    $blueprint->index($foreignKey);
                 });
             }
 
             if ($this->tenantColumnIsNullable($schema, $table)) {
-                $schema->table($table, function (Blueprint $blueprint): void {
-                    $blueprint->unsignedBigInteger('tenant_id')->nullable(false)->change();
+                $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
+                    $blueprint->unsignedBigInteger($foreignKey)->nullable(false)->change();
                 });
             }
 
@@ -79,13 +86,16 @@ final class EnableTenancyAction
 
     private function requiresRetrofit(Builder $schema, string $table): bool
     {
-        return ! $schema->hasColumn($table, 'tenant_id') || $this->tenantColumnIsNullable($schema, $table);
+        return ! $schema->hasColumn($table, TenantSchema::column())
+            || $this->tenantColumnIsNullable($schema, $table);
     }
 
     private function tenantColumnIsNullable(Builder $schema, string $table): bool
     {
+        $foreignKey = TenantSchema::column();
+
         foreach ($schema->getColumns($table) as $column) {
-            if ('tenant_id' === $column['name']) {
+            if ($foreignKey === $column['name']) {
                 return $column['nullable'];
             }
         }

@@ -6,7 +6,7 @@ namespace Misaf\VendraTenant\Tasks;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
@@ -47,16 +47,17 @@ final class SwitchMailTask implements SwitchTenantTask
         Mail::alwaysFrom($this->originalFromAddress, $this->originalFromName);
     }
 
-    /**
-     * @param  Tenant  $tenant
-     */
     public function makeCurrent(IsTenant $tenant): void
     {
-        $this->currentTenantMailer = $tenant->slug;
+        if ( ! $tenant instanceof TenantContract) {
+            return;
+        }
+
+        $this->currentTenantMailer = $tenant->getTenantSlug();
 
         Config::set("mail.mailers.{$this->currentTenantMailer}", Config::array('mail.mailers.smtp'));
 
         Mail::setDefaultDriver($this->currentTenantMailer);
-        Mail::alwaysFrom('support@example.com', "{$tenant->name} [Support]");
+        Mail::alwaysFrom('support@example.com', "{$tenant->getTenantName()} [Support]");
     }
 }

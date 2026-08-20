@@ -9,9 +9,11 @@ use Illuminate\Foundation\Console\AboutCommand;
 use Illuminate\Support\Facades\Event;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Console\Commands\EnableTenancyCommand;
+use Misaf\VendraTenant\Contracts\HostTenantFinder;
 use Misaf\VendraTenant\Listeners\AddCurrentTenantToRequestJobContext;
 use Misaf\VendraTenant\Listeners\RemoveCurrentTenantFromRequestJobContext;
-use Misaf\VendraTenant\Support\VendraTenantResolver;
+use Misaf\VendraTenant\Support\ConfiguredTenantResolver;
+use Misaf\VendraTenant\Support\NullHostTenantFinder;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -25,10 +27,6 @@ final class TenantServiceProvider extends PackageServiceProvider
         $package
             ->name('vendra-tenant')
             ->hasConfigFile()
-            ->hasTranslations()
-            ->hasMigrations([
-                'create_tenants_table',
-            ])
             ->hasCommand(EnableTenancyCommand::class)
             ->hasRoute('web')
             ->hasInstallCommand(function (InstallCommand $command): void {
@@ -38,7 +36,15 @@ final class TenantServiceProvider extends PackageServiceProvider
 
     public function registeringPackage(): void
     {
-        $this->app->singleton(TenantResolver::class, VendraTenantResolver::class);
+        $this->app->singleton(TenantResolver::class, ConfiguredTenantResolver::class);
+
+        /*
+         | How a host maps to a tenant is business knowledge. The engine ships
+         | the inert adapter as a default only — `bindIf`, so the package that
+         | owns tenant domains (misaf/vendra-store here) wins whether it
+         | registers before or after this provider.
+         */
+        $this->app->bindIf(HostTenantFinder::class, NullHostTenantFinder::class);
     }
 
     public function packageBooted(): void

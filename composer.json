@@ -1,6 +1,6 @@
 {
     "name": "misaf/vendra-tenant",
-    "description": "Multi-tenancy management system with isolated data and configuration per tenant",
+    "description": "Generic multi-tenancy engine: tenant context, resolution, switching, and isolation for a configurable tenant model",
     "keywords": [
         "laravel",
         "filamentphp",
@@ -18,13 +18,13 @@
     "type": "vendra-module",
     "require": {
         "php": "^8.3",
+        "illuminate/console": "^13.0",
+        "illuminate/contracts": "^13.0",
+        "illuminate/database": "^13.0",
+        "illuminate/support": "^13.0",
         "misaf/vendra-support": "self.version",
-        "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-multitenancy": "^4.1.3",
-        "spatie/laravel-package-tools": "^1.93.1",
-        "spatie/laravel-sluggable": "^4.0.2",
-        "staudenmeir/belongs-to-through": "^2.18",
-        "staudenmeir/eloquent-has-many-deep": "^1.22.1"
+        "spatie/laravel-package-tools": "^1.93.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24.1",
@@ -50,7 +50,6 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Misaf\\VendraTenant\\Database\\Factories\\": "database/factories/",
             "Misaf\\VendraTenant\\Tests\\": "tests/"
         }
     },

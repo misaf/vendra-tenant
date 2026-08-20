@@ -6,12 +6,12 @@ namespace Misaf\VendraTenant\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Misaf\VendraTenant\Services\DomainTenantFinder;
+use Misaf\VendraTenant\Contracts\HostTenantFinder;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class EnsureAdminDomain
 {
-    public function __construct(private DomainTenantFinder $tenantFinder) {}
+    public function __construct(private HostTenantFinder $tenantFinder) {}
 
     /**
      * @param  Closure(Request): Response  $next
