@@ -29,7 +29,7 @@ there is an architecture test that says so.
 
 ## Requirements
 
-- PHP 8.3+
+- PHP 8.4+
 - Laravel 13
 - `misaf/vendra-support`
 - `spatie/laravel-multitenancy`
@@ -141,11 +141,11 @@ php artisan tenants:artisan route:cache
 
 ## Testing
 
-Run the package checks from the package directory:
+Run the package checks from the project root:
 
 ```bash
-composer test
-composer analyse
+php artisan test --compact --testsuite=vendra-tenant
+composer stan
 ```
 
 The suite drives the engine through a `Workspace` fixture rather than through

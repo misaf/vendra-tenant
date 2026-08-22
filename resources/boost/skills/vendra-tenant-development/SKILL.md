@@ -12,7 +12,7 @@ description: "Create, modify, review, or test the generic Vendra Tenant engine i
 - Apply `laravel-best-practices` to Laravel PHP and `pest-testing` whenever tests change.
 - Apply `tailwindcss-development` only when changing Blade markup or Tailwind classes.
 - Keep changes inside this package's boundary and preserve its public contracts.
-- Add or update focused Pest coverage, then run `composer --working-dir=packages/vendra-tenant test` and `composer --working-dir=packages/vendra-tenant analyse`.
+- Add or update focused Pest coverage, then run `php artisan test --compact --testsuite=vendra-tenant` and `composer stan`.
 
 ## Translatable Persistence
 
@@ -56,5 +56,5 @@ Treat `packages/vendra-tenant` as the **generic multi-tenancy engine**. Tenant i
 - Drive the suite through `tests/Fixtures/Workspace` — a tenant model with a different name, table and `workspace_id` foreign key — so a business assumption leaking into this package fails a test instead of passing quietly.
 - Keep tests purposeful: cover resolver contract conformance, configurable model and foreign key, context establish/restore, cross-tenant isolation, the business relation alias, missing-column retrofits, legacy-row backfills, index and nullability restoration, schema-cache refresh, invalid-tenant safety, and idempotency.
 - Keep Pest architecture tests in `tests/ArchTest.php`: the `php`, `security`, and `laravel` presets, plus the rules asserting this engine does not use `Misaf\VendraStore`, `Misaf\VendraReseller`, `Misaf\VendraConsole`, or `Misaf\VendraSubscription`.
-- Run module checks: `composer --working-dir=packages/vendra-tenant test` and `composer --working-dir=packages/vendra-tenant analyse`.
+- Run checks from the host app: `php artisan test --compact --testsuite=vendra-tenant` and `composer stan`.
 - If PHP files changed, run `vendor/bin/pint --dirty --format agent`.
