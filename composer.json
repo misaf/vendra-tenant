@@ -32,11 +32,6 @@
             "Misaf\\VendraTenant\\Database\\Seeders\\": "database/seeders/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Misaf\\VendraTenant\\Tests\\": "tests/"
-        }
-    },
     "extra": {
         "laravel": {
             "providers": [
