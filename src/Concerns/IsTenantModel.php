@@ -37,6 +37,37 @@ trait IsTenantModel
         return 'slug';
     }
 
+    public function getTenantLocale(): ?string
+    {
+        return $this->tenantOptionalStringAttribute('locale');
+    }
+
+    public function getTenantTimezone(): ?string
+    {
+        return $this->tenantOptionalStringAttribute('timezone');
+    }
+
+    /**
+     * A string attribute the tenant may simply not have.
+     *
+     * Blank and absent both read as null, so a model without the column, and
+     * one whose column is empty, both mean "no opinion, keep the platform's".
+     * The existence check is not defensive padding: under
+     * `preventAccessingMissingAttributes()` reading a column a tenant model
+     * never declared throws, and a `Company` or `Workspace` that has no locale
+     * is the normal case this trait exists to serve.
+     */
+    private function tenantOptionalStringAttribute(string $attribute): ?string
+    {
+        if ( ! $this->hasAttribute($attribute)) {
+            return null;
+        }
+
+        $value = $this->getAttribute($attribute);
+
+        return is_string($value) && '' !== mb_trim($value) ? mb_trim($value) : null;
+    }
+
     private function tenantStringAttribute(string $attribute): string
     {
         $value = $this->getAttribute($attribute);

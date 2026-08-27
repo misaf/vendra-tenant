@@ -59,6 +59,10 @@ final class Company extends SpatieTenant implements TenantContract
 }
 ```
 
+A tenant that carries `locale` or `timezone` columns has them applied while it is
+the current tenant — the concern reads them, and a tenant model without those
+columns simply keeps the application's own configuration.
+
 Point the engine at it in `config/vendra-tenant.php`:
 
 ```php

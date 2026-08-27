@@ -40,6 +40,21 @@ interface TenantContract extends IsTenant
     public function getTenantSlug(): string;
 
     /**
+     * The locale this tenant presents itself in, or null to keep the
+     * platform's.
+     *
+     * The engine applies it while the tenant is current. Null rather than a
+     * default so a tenant model that has no opinion — most of them — implements
+     * nothing and inherits the application's own configuration.
+     */
+    public function getTenantLocale(): ?string;
+
+    /**
+     * The tenant's timezone, or null to keep the platform's.
+     */
+    public function getTenantTimezone(): ?string;
+
+    /**
      * The name of the column holding {@see getTenantSlug()}.
      *
      * The engine has to *query* the slug, not just read it off a loaded model —

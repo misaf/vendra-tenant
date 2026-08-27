@@ -12,6 +12,16 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
 final class SwitchAppTask implements SwitchTenantTask
 {
+    /**
+     * The locale and timezone a tenant that states no preference of its own
+     * runs under. Vendra's fleet is Iranian, so these are the fleet's defaults
+     * rather than the framework's — a tenant that sets `locale`/`timezone`
+     * overrides them.
+     */
+    private const string FALLBACK_LOCALE = 'fa';
+
+    private const string FALLBACK_TIMEZONE = 'Asia/Tehran';
+
     private string $originalLocale;
 
     private string $originalName;
@@ -51,14 +61,28 @@ final class SwitchAppTask implements SwitchTenantTask
     {
         $appUrl = request()->schemeAndHttpHost();
 
-        Config::set('app.locale', 'fa');
+        Config::set('app.locale', $this->tenantLocale($tenant));
         Config::set('app.name', $tenant instanceof TenantContract ? $tenant->getTenantName() : $this->originalName);
         Config::set('livewire.navigate.progress_bar_color', '#f59e0b');
-        Config::set('app.timezone', 'Asia/Tehran');
+        Config::set('app.timezone', $this->tenantTimezone($tenant));
         Config::set('app.url', $appUrl);
         Config::set('app.asset_url', $appUrl);
 
         URL::forceRootUrl($appUrl);
         URL::useAssetOrigin($appUrl);
+    }
+
+    private function tenantLocale(IsTenant $tenant): string
+    {
+        $locale = $tenant instanceof TenantContract ? $tenant->getTenantLocale() : null;
+
+        return $locale ?? self::FALLBACK_LOCALE;
+    }
+
+    private function tenantTimezone(IsTenant $tenant): string
+    {
+        $timezone = $tenant instanceof TenantContract ? $tenant->getTenantTimezone() : null;
+
+        return $timezone ?? self::FALLBACK_TIMEZONE;
     }
 }
