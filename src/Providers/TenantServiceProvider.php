@@ -49,7 +49,7 @@ final class TenantServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        AboutCommand::add('Vendra Tenant', fn(): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-tenant')]);
+        AboutCommand::add('Vendra Tenant', fn (): array => ['Version' => InstalledVersions::getPrettyVersion('misaf/vendra-tenant')]);
 
         Event::listen(MadeTenantCurrentEvent::class, AddCurrentTenantToRequestJobContext::class);
         Event::listen(ForgotCurrentTenantEvent::class, RemoveCurrentTenantFromRequestJobContext::class);

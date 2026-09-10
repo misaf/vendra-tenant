@@ -27,7 +27,7 @@ final class EnableTenancyCommand extends Command
     {
         $tenant = $this->tenantResolver->findByKeyOrSlug((string) $this->argument('tenant'));
 
-        if (null === $tenant) {
+        if ($tenant === null) {
             $this->error('The requested tenant could not be found.');
 
             return self::FAILURE;
@@ -35,7 +35,7 @@ final class EnableTenancyCommand extends Command
 
         $tenantKey = $tenant->getKey();
 
-        if ( ! is_int($tenantKey) && ( ! is_string($tenantKey) || ! ctype_digit($tenantKey))) {
+        if (! is_int($tenantKey) && (! is_string($tenantKey) || ! ctype_digit($tenantKey))) {
             $this->error('The requested tenant has an unsupported key type.');
 
             return self::FAILURE;
@@ -43,13 +43,13 @@ final class EnableTenancyCommand extends Command
 
         $tables = $this->enableTenancyAction->pendingTables();
 
-        if ([] === $tables) {
+        if ($tables === []) {
             $this->info('All registered tables are already tenant-aware.');
 
             return self::SUCCESS;
         }
 
-        if ( ! $this->option('force') && ! $this->confirm(
+        if (! $this->option('force') && ! $this->confirm(
             sprintf(
                 'Add tenant ownership to %d table(s) and assign existing unscoped records to tenant [%s]?',
                 count($tables),

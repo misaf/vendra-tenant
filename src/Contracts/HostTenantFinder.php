@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Contracts;
 
+use Misaf\VendraTenant\Support\NullHostTenantFinder;
 use Spatie\Multitenancy\Contracts\IsTenant;
 
 /**
@@ -12,7 +13,7 @@ use Spatie\Multitenancy\Contracts\IsTenant;
  * How a host maps to a tenant is business knowledge — Vendra ecommerce resolves
  * it from the store's own domains — so the engine depends on this interface and
  * the concrete application binds the adapter. Without a binding the engine falls
- * back to {@see \Misaf\VendraTenant\Support\NullHostTenantFinder} and simply
+ * back to {@see NullHostTenantFinder} and simply
  * resolves nothing.
  */
 interface HostTenantFinder

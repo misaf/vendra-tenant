@@ -35,7 +35,7 @@ final class SwitchMailTask implements SwitchTenantTask
 
     public function forgetCurrent(): void
     {
-        if (null !== $this->currentTenantMailer) {
+        if ($this->currentTenantMailer !== null) {
             Mail::purge($this->currentTenantMailer);
 
             $this->currentTenantMailer = null;
@@ -49,7 +49,7 @@ final class SwitchMailTask implements SwitchTenantTask
 
     public function makeCurrent(IsTenant $tenant): void
     {
-        if ( ! $tenant instanceof TenantContract) {
+        if (! $tenant instanceof TenantContract) {
             return;
         }
 

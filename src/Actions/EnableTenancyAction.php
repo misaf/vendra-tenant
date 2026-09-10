@@ -52,7 +52,7 @@ final class EnableTenancyAction
             $schema = $this->schema($definition['connection']);
             $connection = $this->connection($definition['connection']);
 
-            if ( ! $schema->hasColumn($table, $foreignKey)) {
+            if (! $schema->hasColumn($table, $foreignKey)) {
                 $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
                     $blueprint->unsignedBigInteger($foreignKey)->nullable();
                 });
@@ -62,7 +62,7 @@ final class EnableTenancyAction
                 ->whereNull($foreignKey)
                 ->update([$foreignKey => $tenantId]);
 
-            if ( ! $schema->hasIndex($table, [$foreignKey])) {
+            if (! $schema->hasIndex($table, [$foreignKey])) {
                 $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
                     $blueprint->index($foreignKey);
                 });
@@ -79,7 +79,7 @@ final class EnableTenancyAction
         }
 
         return [
-            'tables'       => $tables,
+            'tables' => $tables,
             'updated_rows' => $updatedRows,
         ];
     }

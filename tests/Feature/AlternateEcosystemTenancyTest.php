@@ -88,12 +88,12 @@ it('scopes a generic tenant_id table to the current Company', function (): void 
 
     $acmeDocument = $resolver->execute(
         $acme->getKey(),
-        fn(): Document => Document::query()->create(['title' => 'Acme brief']),
+        fn (): Document => Document::query()->create(['title' => 'Acme brief']),
     );
 
     $globexDocument = $resolver->execute(
         $globex->getKey(),
-        fn(): Document => Document::query()->create(['title' => 'Globex brief']),
+        fn (): Document => Document::query()->create(['title' => 'Globex brief']),
     );
 
     // BelongsToTenant stamped the current Company without anyone passing an id.
@@ -101,9 +101,9 @@ it('scopes a generic tenant_id table to the current Company', function (): void 
         ->and($globexDocument->getAttribute('tenant_id'))->toBe($globex->getKey());
 
     // Company A context sees only Company A documents.
-    expect($resolver->execute($acme->getKey(), fn(): array => Document::query()->pluck('title')->all()))
+    expect($resolver->execute($acme->getKey(), fn (): array => Document::query()->pluck('title')->all()))
         ->toBe(['Acme brief'])
-        ->and($resolver->execute($globex->getKey(), fn(): array => Document::query()->pluck('title')->all()))
+        ->and($resolver->execute($globex->getKey(), fn (): array => Document::query()->pluck('title')->all()))
         ->toBe(['Globex brief'])
         ->and(Document::query()->withoutGlobalScopes()->count())->toBe(2);
 });
@@ -113,7 +113,7 @@ it('resolves the owner relation to the configured Company', function (): void {
 
     $document = app(TenantResolver::class)->execute(
         $acme->getKey(),
-        fn(): Document => Document::query()->create(['title' => 'Acme brief']),
+        fn (): Document => Document::query()->create(['title' => 'Acme brief']),
     );
 
     expect($document->tenant()->getForeignKeyName())->toBe('tenant_id')
@@ -133,12 +133,12 @@ it('runs the same generic table under a different tenant model unchanged', funct
 
     $resolver = app(TenantResolver::class);
 
-    $resolver->execute($first->getKey(), fn(): Document => Document::query()->create(['title' => 'First brief']));
-    $resolver->execute($second->getKey(), fn(): Document => Document::query()->create(['title' => 'Second brief']));
+    $resolver->execute($first->getKey(), fn (): Document => Document::query()->create(['title' => 'First brief']));
+    $resolver->execute($second->getKey(), fn (): Document => Document::query()->create(['title' => 'Second brief']));
 
     expect($resolver->modelClass())->toBe(Workspace::class)
         ->and(TenantSchema::column())->toBe('tenant_id')
-        ->and($resolver->execute($first->getKey(), fn(): array => Document::query()->pluck('title')->all()))
+        ->and($resolver->execute($first->getKey(), fn (): array => Document::query()->pluck('title')->all()))
         ->toBe(['First brief']);
 
     Workspace::forgetCurrent();
@@ -178,7 +178,7 @@ it('builds a tenant-guarded generated column against the configured foreign key'
         $table->unsignedBigInteger('default_guard')
             ->nullable()
             ->virtualAs(TenantSchema::enabled()
-                ? 'CASE WHEN is_default THEN ' . TenantSchema::column() . ' ELSE NULL END'
+                ? 'CASE WHEN is_default THEN '.TenantSchema::column().' ELSE NULL END'
                 : 'CASE WHEN is_default THEN 1 ELSE NULL END');
     });
 

@@ -62,7 +62,7 @@ final class Workspace extends SpatieTenant implements TenantContract
     protected function casts(): array
     {
         return [
-            'uuid'   => 'integer',
+            'uuid' => 'integer',
             'active' => 'boolean',
         ];
     }

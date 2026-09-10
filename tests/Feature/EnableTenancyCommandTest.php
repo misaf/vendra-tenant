@@ -46,7 +46,7 @@ it('retrofits and backfills tables migrated before tenancy was installed', funct
     expect(TenantSchema::hasTenantColumn('legacy_tenant_records'))->toBeFalse();
 
     $this->artisan('vendra-tenant:enable', [
-        'tenant'  => 'legacy-shop',
+        'tenant' => 'legacy-shop',
         '--force' => true,
     ])
         ->expectsOutputToContain('Enabled tenancy for 1 table(s) and assigned 1 existing record(s)')
@@ -66,7 +66,7 @@ it('is idempotent after a table has been retrofitted', function (): void {
     $tenant = legacyWorkspace('acme');
 
     $arguments = [
-        'tenant'  => (string) $tenant->getKey(),
+        'tenant' => (string) $tenant->getKey(),
         '--force' => true,
     ];
 
@@ -79,7 +79,7 @@ it('is idempotent after a table has been retrofitted', function (): void {
 
 it('does not mutate schemas when the target tenant does not exist', function (): void {
     $this->artisan('vendra-tenant:enable', [
-        'tenant'  => 'missing-tenant',
+        'tenant' => 'missing-tenant',
         '--force' => true,
     ])
         ->expectsOutput('The requested tenant could not be found.')

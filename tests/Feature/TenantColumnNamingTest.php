@@ -63,20 +63,20 @@ afterEach(function (): void {
 
 dataset('tenant column namings', [
     'Company keyed by company_id, slugged by code' => [Company::class, 'company_id', 'code'],
-    'Workspace keyed by uuid, slugged by handle'   => [Workspace::class, 'uuid', 'handle'],
+    'Workspace keyed by uuid, slugged by handle' => [Workspace::class, 'uuid', 'handle'],
 ]);
 
 /**
- * @param class-string<Model&TenantContract> $modelClass
+ * @param  class-string<Model&TenantContract>  $modelClass
  */
 function makeNamedTenant(string $modelClass, string $slug, bool $active = true): Model&TenantContract
 {
     /** @var Model&TenantContract $tenant */
-    $tenant = new $modelClass();
+    $tenant = new $modelClass;
 
     $attributes = [
-        'name'                        => ucfirst($slug),
-        $tenant->getTenantSlugName()  => $slug,
+        'name' => ucfirst($slug),
+        $tenant->getTenantSlugName() => $slug,
     ];
 
     if (Schema::hasColumn($tenant->getTable(), 'active')) {
@@ -170,7 +170,7 @@ it('establishes the current tenant through the generic resolver', function (
     expect($resolver->makeCurrent('acme'))->toBeTrue()
         ->and($resolver->currentId())->toBe($acme->getTenantKey());
 
-    $seen = $resolver->execute($globex->getKey(), fn(): ?int => $resolver->currentId());
+    $seen = $resolver->execute($globex->getKey(), fn (): ?int => $resolver->currentId());
 
     expect($seen)->toBe($globex->getTenantKey())
         ->and($resolver->currentId())->toBe($acme->getTenantKey());

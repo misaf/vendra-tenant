@@ -38,17 +38,17 @@ final class CacheTenantRoutesJob implements NotTenantAware, ShouldQueue
             traceId: RequestJobContext::resolveTraceId(),
             operation: 'tenant_route_cache',
             tenantId: $this->tenantId,
-        ))->scope(fn() => $this->cacheRoutes());
+        ))->scope(fn () => $this->cacheRoutes());
     }
 
     private function cacheRoutes(): void
     {
         $exitCode = Artisan::call('tenants:artisan', [
             'artisanCommand' => 'route:cache',
-            '--tenant'       => [$this->tenantId],
+            '--tenant' => [$this->tenantId],
         ]);
 
-        if (0 !== $exitCode) {
+        if ($exitCode !== 0) {
             throw new RuntimeException(sprintf(
                 'Tenant route cache command failed with exit code [%d].',
                 $exitCode,

@@ -73,7 +73,7 @@ final class ConfiguredTenantResolver implements TenantResolver
             $tenant = $this->findByKeyOrSlug($tenant);
         }
 
-        if ( ! $tenant instanceof TenantContract) {
+        if (! $tenant instanceof TenantContract) {
             return false;
         }
 
@@ -88,7 +88,7 @@ final class ConfiguredTenantResolver implements TenantResolver
             $tenant = $this->findByKeyOrSlug($tenant);
         }
 
-        if ( ! $tenant instanceof TenantContract) {
+        if (! $tenant instanceof TenantContract) {
             throw new RuntimeException('The given tenant could not be resolved.');
         }
 
@@ -126,7 +126,7 @@ final class ConfiguredTenantResolver implements TenantResolver
             $query->scopes('accessible');
         }
 
-        if ('' !== $search) {
+        if ($search !== '') {
             $query->where($slugName, 'like', "%{$search}%");
         }
 
@@ -152,7 +152,7 @@ final class ConfiguredTenantResolver implements TenantResolver
     {
         $modelClass = config('vendra-tenant.model');
 
-        if ( ! is_string($modelClass) || ! is_a($modelClass, Model::class, true) || ! is_a($modelClass, TenantContract::class, true)) {
+        if (! is_string($modelClass) || ! is_a($modelClass, Model::class, true) || ! is_a($modelClass, TenantContract::class, true)) {
             throw new InvalidArgumentException(sprintf(
                 'Configure [vendra-tenant.model] with an Eloquent model implementing [%s]; [%s] given.',
                 TenantContract::class,
@@ -180,7 +180,7 @@ final class ConfiguredTenantResolver implements TenantResolver
     {
         $modelClass = $this->tenantModelClass();
 
-        return new $modelClass();
+        return new $modelClass;
     }
 
     /**
@@ -199,6 +199,6 @@ final class ConfiguredTenantResolver implements TenantResolver
      */
     private function hasScope(string $scope): bool
     {
-        return method_exists($this->tenantModelClass(), 'scope' . ucfirst($scope));
+        return method_exists($this->tenantModelClass(), 'scope'.ucfirst($scope));
     }
 }

@@ -50,7 +50,7 @@ afterEach(function (): void {
 function makeWorkspace(string $handle): Workspace
 {
     return Workspace::query()->create([
-        'name'   => ucfirst($handle),
+        'name' => ucfirst($handle),
         'handle' => $handle,
         'active' => true,
     ]);
@@ -86,7 +86,7 @@ it('establishes and restores the tenant context', function (): void {
 
     expect($resolver->current())->toBeNull();
 
-    $seen = $resolver->execute($workspace->getKey(), fn(): mixed => $resolver->currentId());
+    $seen = $resolver->execute($workspace->getKey(), fn (): mixed => $resolver->currentId());
 
     expect($seen)->toBe($workspace->getKey())
         ->and($resolver->current())->toBeNull();
@@ -132,7 +132,7 @@ it('stamps and scopes records through the configured foreign key', function (): 
 
     $visible = app(TenantResolver::class)->execute(
         $first->getKey(),
-        fn(): array => WorkspaceDocument::query()->pluck('title')->all(),
+        fn (): array => WorkspaceDocument::query()->pluck('title')->all(),
     );
 
     expect($visible)->toBe(['First brief']);
@@ -143,7 +143,7 @@ it('points the owner relation at the configured model and foreign key', function
 
     $document = app(TenantResolver::class)->execute(
         $workspace->getKey(),
-        fn(): WorkspaceDocument => WorkspaceDocument::query()->create(['title' => 'Brief']),
+        fn (): WorkspaceDocument => WorkspaceDocument::query()->create(['title' => 'Brief']),
     );
 
     expect($document)->toBeInstanceOf(WorkspaceDocument::class)

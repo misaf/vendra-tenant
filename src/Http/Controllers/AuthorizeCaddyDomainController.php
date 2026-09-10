@@ -29,7 +29,7 @@ final readonly class AuthorizeCaddyDomainController
         );
 
         abort_if(
-            null === $this->tenantFinder->findForHost(mb_strtolower($domain)),
+            $this->tenantFinder->findForHost(mb_strtolower($domain)) === null,
             Response::HTTP_NOT_FOUND,
         );
 

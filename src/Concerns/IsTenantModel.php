@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Concerns;
 
+use Misaf\VendraTenant\Contracts\TenantContract;
+
 /**
- * Default {@see \Misaf\VendraTenant\Contracts\TenantContract} implementation for
+ * Default {@see TenantContract} implementation for
  * a model that stores a `name` and a `slug`.
  *
  * A tenant model that names its slug column differently overrides only
@@ -59,13 +61,13 @@ trait IsTenantModel
      */
     private function tenantOptionalStringAttribute(string $attribute): ?string
     {
-        if ( ! $this->hasAttribute($attribute)) {
+        if (! $this->hasAttribute($attribute)) {
             return null;
         }
 
         $value = $this->getAttribute($attribute);
 
-        return is_string($value) && '' !== mb_trim($value) ? mb_trim($value) : null;
+        return is_string($value) && mb_trim($value) !== '' ? mb_trim($value) : null;
     }
 
     private function tenantStringAttribute(string $attribute): string

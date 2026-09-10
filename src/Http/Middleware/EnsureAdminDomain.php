@@ -20,9 +20,9 @@ final readonly class EnsureAdminDomain
     {
         $tenant = $this->tenantFinder->findForAdminHost($request->getHost());
 
-        abort_if(null === $tenant, Response::HTTP_NOT_FOUND);
+        abort_if($tenant === null, Response::HTTP_NOT_FOUND);
 
-        if ( ! $tenant->isCurrent()) {
+        if (! $tenant->isCurrent()) {
             $tenant->makeCurrent();
         }
 

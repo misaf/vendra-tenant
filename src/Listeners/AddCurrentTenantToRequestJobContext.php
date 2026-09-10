@@ -12,7 +12,7 @@ final class AddCurrentTenantToRequestJobContext
 {
     public function handle(MadeTenantCurrentEvent $event): void
     {
-        if ( ! $event->tenant instanceof TenantContract) {
+        if (! $event->tenant instanceof TenantContract) {
             return;
         }
 

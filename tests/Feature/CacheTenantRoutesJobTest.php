@@ -11,7 +11,7 @@ it('caches routes for the given tenant', function (): void {
         ->once()
         ->with('tenants:artisan', [
             'artisanCommand' => 'route:cache',
-            '--tenant'       => [7],
+            '--tenant' => [7],
         ])
         ->andReturn(0);
 

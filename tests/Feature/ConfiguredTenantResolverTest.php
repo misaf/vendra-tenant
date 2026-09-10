@@ -49,7 +49,7 @@ it('tracks the current tenant across request and job context switches', function
 });
 
 it('throws when the tenant cannot be resolved for execution', function (): void {
-    expect(fn(): mixed => (new ConfiguredTenantResolver())->execute(999999, fn(): null => null))
+    expect(fn (): mixed => (new ConfiguredTenantResolver)->execute(999999, fn (): null => null))
         ->toThrow(RuntimeException::class);
 });
 
@@ -69,7 +69,7 @@ it('uses the current tenant domain as the asset origin', function (): void {
 
     $this->app->instance('request', Request::create('https://seomasters.test/reseller'));
 
-    $task = new SwitchAppTask();
+    $task = new SwitchAppTask;
     $task->makeCurrent(currentWorkspace());
 
     expect(asset('css/filament/filament/app.css'))->toBe('https://seomasters.test/css/filament/filament/app.css')
