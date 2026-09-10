@@ -6,8 +6,8 @@ namespace Misaf\VendraTenant\Console\Commands;
 
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
-use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Actions\EnableTenancyAction;
 

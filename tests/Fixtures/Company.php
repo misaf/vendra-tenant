@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Tests\Fixtures;
 
-use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
 use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Misaf\VendraTenant\Concerns\IsTenantModel;
 use Misaf\VendraTenant\Contracts\TenantContract;

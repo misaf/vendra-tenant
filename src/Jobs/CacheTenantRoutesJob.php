@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Jobs;
 
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Artisan;
 use Misaf\VendraSupport\Context\RequestJobContext;
 use RuntimeException;
