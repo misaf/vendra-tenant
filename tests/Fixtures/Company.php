@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Tests\Fixtures;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Misaf\VendraTenant\Concerns\IsTenantModel;
 use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
@@ -22,17 +25,12 @@ use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
  * @property string $name
  * @property string $code
  */
+#[Unguarded]
+#[Table(name: 'companies', key: 'company_id')]
+#[WithoutTimestamps]
 final class Company extends SpatieTenant implements TenantContract
 {
     use IsTenantModel;
-
-    protected $table = 'companies';
-
-    protected $primaryKey = 'company_id';
-
-    protected $guarded = [];
-
-    public $timestamps = false;
 
     public function getTenantSlugName(): string
     {

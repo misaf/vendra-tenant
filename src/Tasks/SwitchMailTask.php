@@ -17,13 +17,13 @@ final class SwitchMailTask implements SwitchTenantTask
     /**
      * @var array<mixed>
      */
-    private array $originalMailers;
+    private readonly array $originalMailers;
 
-    private string $originalDefaultDriver;
+    private readonly string $originalDefaultDriver;
 
-    private string $originalFromAddress;
+    private readonly string $originalFromAddress;
 
-    private string $originalFromName;
+    private readonly string $originalFromName;
 
     public function __construct()
     {

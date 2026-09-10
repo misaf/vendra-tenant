@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -24,7 +25,7 @@ beforeEach(function (): void {
         $table->string('name');
     });
 
-    app(TenantTableRegistry::class)->register('legacy_tenant_records');
+    resolve(TenantTableRegistry::class)->register('legacy_tenant_records');
 });
 
 afterEach(function (): void {
@@ -58,7 +59,7 @@ it('retrofits and backfills tables migrated before tenancy was installed', funct
     expect(Schema::hasColumn('legacy_tenant_records', 'tenant_id'))->toBeTrue()
         ->and(Schema::hasIndex('legacy_tenant_records', ['tenant_id']))->toBeTrue()
         ->and(TenantSchema::hasTenantColumn('legacy_tenant_records'))->toBeTrue()
-        ->and($tenantColumn['nullable'])->toBeFalse()
+        ->and(Arr::get($tenantColumn, 'nullable'))->toBeFalse()
         ->and(DB::table('legacy_tenant_records')->value('tenant_id'))->toBe($tenant->getKey());
 });
 

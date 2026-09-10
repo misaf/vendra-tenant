@@ -88,9 +88,7 @@ final class ConfiguredTenantResolver implements TenantResolver
             $tenant = $this->findByKeyOrSlug($tenant);
         }
 
-        if (! $tenant instanceof TenantContract) {
-            throw new RuntimeException('The given tenant could not be resolved.');
-        }
+        throw_unless($tenant instanceof TenantContract, RuntimeException::class, 'The given tenant could not be resolved.');
 
         return $tenant->execute($callback);
     }

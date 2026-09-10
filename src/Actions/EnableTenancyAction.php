@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Actions;
 
+use Illuminate\Support\Arr;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
@@ -18,9 +19,9 @@ use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
  * {@see TenantSchema}, never assumed, so the same command retrofits `tenant_id`
  * here and `company_id` in a Company-tenanted application.
  */
-final class EnableTenancyAction
+final readonly class EnableTenancyAction
 {
-    public function __construct(private readonly TenantTableRegistry $tenantTables) {}
+    public function __construct(private TenantTableRegistry $tenantTables) {}
 
     /**
      * @return list<array{table: string, connection: ?string}>
@@ -30,10 +31,10 @@ final class EnableTenancyAction
         return array_values(array_filter(
             $this->tenantTables->all(),
             function (array $definition): bool {
-                $schema = $this->schema($definition['connection']);
+                $schema = $this->schema(Arr::get($definition, 'connection'));
 
-                return $schema->hasTable($definition['table'])
-                    && $this->requiresRetrofit($schema, $definition['table']);
+                return $schema->hasTable(Arr::get($definition, 'table'))
+                    && $this->requiresRetrofit($schema, Arr::get($definition, 'table'));
             },
         ));
     }
@@ -48,9 +49,9 @@ final class EnableTenancyAction
         $foreignKey = TenantSchema::column();
 
         foreach ($this->pendingTables() as $definition) {
-            $table = $definition['table'];
-            $schema = $this->schema($definition['connection']);
-            $connection = $this->connection($definition['connection']);
+            $table = Arr::get($definition, 'table');
+            $schema = $this->schema(Arr::get($definition, 'connection'));
+            $connection = $this->connection(Arr::get($definition, 'connection'));
 
             if (! $schema->hasColumn($table, $foreignKey)) {
                 $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
@@ -95,8 +96,8 @@ final class EnableTenancyAction
         $foreignKey = TenantSchema::column();
 
         foreach ($schema->getColumns($table) as $column) {
-            if ($foreignKey === $column['name']) {
-                return $column['nullable'];
+            if ($foreignKey === Arr::get($column, 'name')) {
+                return Arr::get($column, 'nullable');
             }
         }
 

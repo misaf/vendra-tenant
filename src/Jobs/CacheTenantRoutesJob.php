@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Jobs;
 
-use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Artisan;
 use Misaf\VendraSupport\Context\RequestJobContext;
 use RuntimeException;
@@ -25,20 +22,17 @@ use Spatie\Multitenancy\Jobs\NotTenantAware;
  */
 final class CacheTenantRoutesJob implements NotTenantAware, ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     public function __construct(private readonly int $tenantId) {}
 
     public function handle(): void
     {
-        (new RequestJobContext(
+        new RequestJobContext(
             traceId: RequestJobContext::resolveTraceId(),
             operation: 'tenant_route_cache',
             tenantId: $this->tenantId,
-        ))->scope(fn () => $this->cacheRoutes());
+        )->scope(fn () => $this->cacheRoutes());
     }
 
     private function cacheRoutes(): void

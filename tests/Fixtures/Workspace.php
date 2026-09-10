@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Tests\Fixtures;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Misaf\VendraTenant\Concerns\IsTenantModel;
 use Misaf\VendraTenant\Contracts\TenantContract;
@@ -30,17 +34,12 @@ use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
  * @property string $handle
  * @property bool $active
  */
+#[Unguarded]
+#[Table(name: 'workspaces', key: 'uuid')]
+#[WithoutTimestamps]
 final class Workspace extends SpatieTenant implements TenantContract
 {
     use IsTenantModel;
-
-    protected $table = 'workspaces';
-
-    protected $primaryKey = 'uuid';
-
-    protected $guarded = [];
-
-    public $timestamps = false;
 
     public function getTenantSlugName(): string
     {
@@ -48,10 +47,11 @@ final class Workspace extends SpatieTenant implements TenantContract
     }
 
     /**
-     * @param  Builder<Workspace>  $query
-     * @return Builder<Workspace>
+     * @param Builder<self> $query
+     * @return Builder<self>
      */
-    public function scopeAccessible(Builder $query): Builder
+    #[Scope]
+    protected function accessible(Builder $query): Builder
     {
         return $query->where('active', true);
     }

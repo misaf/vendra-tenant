@@ -16,6 +16,6 @@ final class AddCurrentTenantToRequestJobContext
             return;
         }
 
-        (new RequestJobContext(tenantId: $event->tenant->getTenantKey()))->add();
+        new RequestJobContext(tenantId: $event->tenant->getTenantKey())->add();
     }
 }

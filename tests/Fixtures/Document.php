@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Tests\Fixtures;
 
+use Illuminate\Database\Eloquent\Attributes\Unguarded;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Tenancy\BelongsToTenant;
 
@@ -15,13 +19,11 @@ use Misaf\VendraSupport\Tenancy\BelongsToTenant;
  * @property int $tenant_id
  * @property string $title
  */
+#[Unguarded]
+#[Table(name: 'generic_documents')]
+#[WithoutTimestamps]
 final class Document extends Model
 {
+    use HasFactory;
     use BelongsToTenant;
-
-    protected $table = 'generic_documents';
-
-    protected $guarded = [];
-
-    public $timestamps = false;
 }

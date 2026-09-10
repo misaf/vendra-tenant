@@ -10,7 +10,7 @@ use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Contracts\IsTenant;
 use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 
-final class SwitchAppTask implements SwitchTenantTask
+final readonly class SwitchAppTask implements SwitchTenantTask
 {
     /**
      * The locale and timezone a tenant that states no preference of its own

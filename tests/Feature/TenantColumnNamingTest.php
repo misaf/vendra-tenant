@@ -112,7 +112,7 @@ it('finds a tenant by its primary key whatever that key is called', function (
 
     $tenant = makeNamedTenant($modelClass, 'acme');
 
-    $found = app(TenantResolver::class)->findByKeyOrSlug($tenant->getKey());
+    $found = resolve(TenantResolver::class)->findByKeyOrSlug($tenant->getKey());
 
     expect($found)->toBeInstanceOf($modelClass)
         ->and($found?->getKey())->toBe($tenant->getKey())
@@ -127,7 +127,7 @@ it('finds a tenant by its slug whatever that column is called', function (
     $acme = makeNamedTenant($modelClass, 'acme');
     makeNamedTenant($modelClass, 'globex');
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver->findByKeyOrSlug('acme')?->getKey())->toBe($acme->getKey())
         ->and($resolver->findByKeyOrSlug('globex')?->getKey())->not->toBe($acme->getKey())
@@ -141,11 +141,11 @@ it('builds search options from the model-declared key and slug columns', functio
 
     $acme = makeNamedTenant($modelClass, 'acme');
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver->searchOptions(''))->toBe([$acme->getTenantKey() => 'acme'])
         ->and($resolver->searchOptions('acm'))->toBe([$acme->getTenantKey() => 'acme'])
-        ->and($resolver->searchOptions('zzz'))->toBe([]);
+        ->and($resolver->searchOptions('zzz'))->toBeEmpty();
 })->with('tenant column namings');
 
 it('establishes the current tenant through the generic resolver', function (
@@ -156,7 +156,7 @@ it('establishes the current tenant through the generic resolver', function (
     $acme = makeNamedTenant($modelClass, 'acme');
     $globex = makeNamedTenant($modelClass, 'globex');
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver->current())->toBeNull();
 
@@ -165,9 +165,8 @@ it('establishes the current tenant through the generic resolver', function (
         ->and($resolver->currentId())->toBe($acme->getTenantKey());
 
     expect($resolver->makeCurrent($globex->getKey()))->toBeTrue()
-        ->and($resolver->currentId())->toBe($globex->getTenantKey());
-
-    expect($resolver->makeCurrent('acme'))->toBeTrue()
+        ->and($resolver->currentId())->toBe($globex->getTenantKey())
+        ->and($resolver->makeCurrent('acme'))->toBeTrue()
         ->and($resolver->currentId())->toBe($acme->getTenantKey());
 
     $seen = $resolver->execute($globex->getKey(), fn (): ?int => $resolver->currentId());

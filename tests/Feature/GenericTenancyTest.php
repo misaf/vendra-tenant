@@ -57,7 +57,7 @@ function makeWorkspace(string $handle): Workspace
 }
 
 it('resolves whichever tenant model the application configures', function (): void {
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver)->toBeInstanceOf(ConfiguredTenantResolver::class)
         ->and($resolver->modelClass())->toBe(Workspace::class)
@@ -68,7 +68,7 @@ it('resolves whichever tenant model the application configures', function (): vo
 it('rejects a configured model that is not a tenant', function (): void {
     config()->set('vendra-tenant.model', WorkspaceDocument::class);
 
-    app(TenantResolver::class)->modelClass();
+    resolve(TenantResolver::class)->modelClass();
 })->throws(InvalidArgumentException::class);
 
 it('works with a tenant model that is not named Tenant', function (): void {
@@ -82,7 +82,7 @@ it('works with a tenant model that is not named Tenant', function (): void {
 
 it('establishes and restores the tenant context', function (): void {
     $workspace = makeWorkspace('acme');
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver->current())->toBeNull();
 
@@ -99,7 +99,7 @@ it('establishes and restores the tenant context', function (): void {
 it('finds the configured tenant by key or slug', function (): void {
     $workspace = makeWorkspace('acme');
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     expect($resolver->findByKeyOrSlug($workspace->getKey())?->getKey())->toBe($workspace->getKey())
         ->and($resolver->findByKeyOrSlug('acme')?->getKey())->toBe($workspace->getKey())
@@ -118,11 +118,11 @@ it('stamps and scopes records through the configured foreign key', function (): 
     $first = makeWorkspace('first');
     $second = makeWorkspace('second');
 
-    app(TenantResolver::class)->execute($first->getKey(), function (): void {
+    resolve(TenantResolver::class)->execute($first->getKey(), function (): void {
         WorkspaceDocument::query()->create(['title' => 'First brief']);
     });
 
-    app(TenantResolver::class)->execute($second->getKey(), function (): void {
+    resolve(TenantResolver::class)->execute($second->getKey(), function (): void {
         WorkspaceDocument::query()->create(['title' => 'Second brief']);
     });
 
@@ -130,7 +130,7 @@ it('stamps and scopes records through the configured foreign key', function (): 
         ->and(WorkspaceDocument::query()->withoutGlobalScopes()->pluck('workspace_id')->all())
         ->toBe([$first->getKey(), $second->getKey()]);
 
-    $visible = app(TenantResolver::class)->execute(
+    $visible = resolve(TenantResolver::class)->execute(
         $first->getKey(),
         fn (): array => WorkspaceDocument::query()->pluck('title')->all(),
     );
@@ -141,7 +141,7 @@ it('stamps and scopes records through the configured foreign key', function (): 
 it('points the owner relation at the configured model and foreign key', function (): void {
     $workspace = makeWorkspace('acme');
 
-    $document = app(TenantResolver::class)->execute(
+    $document = resolve(TenantResolver::class)->execute(
         $workspace->getKey(),
         fn (): WorkspaceDocument => WorkspaceDocument::query()->create(['title' => 'Brief']),
     );
@@ -158,18 +158,18 @@ it('runs a callback once inside every tenant', function (): void {
 
     $seen = [];
 
-    app(TenantResolver::class)->eachTenant(function () use (&$seen): void {
-        $seen[] = app(TenantResolver::class)->currentId();
+    resolve(TenantResolver::class)->eachTenant(function () use (&$seen): void {
+        $seen[] = resolve(TenantResolver::class)->currentId();
     });
 
     expect($seen)->toEqualCanonicalizing([$first->getKey(), $second->getKey()])
-        ->and(app(TenantResolver::class)->current())->toBeNull();
+        ->and(resolve(TenantResolver::class)->current())->toBeNull();
 });
 
 it('offers only accessible tenants as search options', function (): void {
     $active = makeWorkspace('acme');
     Workspace::query()->create(['name' => 'Archived', 'handle' => 'archived', 'active' => false]);
 
-    expect(app(TenantResolver::class)->searchOptions(''))->toBe([$active->getKey() => 'acme'])
-        ->and(app(TenantResolver::class)->searchOptions('arch'))->toBe([]);
+    expect(resolve(TenantResolver::class)->searchOptions(''))->toBe([$active->getKey() => 'acme'])
+        ->and(resolve(TenantResolver::class)->searchOptions('arch'))->toBeEmpty();
 });

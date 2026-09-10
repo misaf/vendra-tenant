@@ -84,7 +84,7 @@ it('owns a reusable package table through tenant_id, not company_id', function (
 it('scopes a generic tenant_id table to the current Company', function (): void {
     [$acme, $globex] = twoCompanies();
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     $acmeDocument = $resolver->execute(
         $acme->getKey(),
@@ -111,7 +111,7 @@ it('scopes a generic tenant_id table to the current Company', function (): void 
 it('resolves the owner relation to the configured Company', function (): void {
     [$acme] = twoCompanies();
 
-    $document = app(TenantResolver::class)->execute(
+    $document = resolve(TenantResolver::class)->execute(
         $acme->getKey(),
         fn (): Document => Document::query()->create(['title' => 'Acme brief']),
     );
@@ -131,7 +131,7 @@ it('runs the same generic table under a different tenant model unchanged', funct
     $first = Workspace::query()->create(['name' => 'First', 'handle' => 'first', 'active' => true]);
     $second = Workspace::query()->create(['name' => 'Second', 'handle' => 'second', 'active' => true]);
 
-    $resolver = app(TenantResolver::class);
+    $resolver = resolve(TenantResolver::class);
 
     $resolver->execute($first->getKey(), fn (): Document => Document::query()->create(['title' => 'First brief']));
     $resolver->execute($second->getKey(), fn (): Document => Document::query()->create(['title' => 'Second brief']));
@@ -153,10 +153,10 @@ it('lets the application replace the host resolution port entirely', function ()
      */
     app()->instance(HostTenantFinder::class, new StaticHostTenantFinder('acme.internal', $acme));
 
-    expect(app(HostTenantFinder::class)->findForHost('acme.internal')?->getKey())->toBe($acme->getKey())
-        ->and(app(HostTenantFinder::class)->findForAdminHost('acme.internal')?->getKey())->toBe($acme->getKey())
-        ->and(app(HostTenantFinder::class)->findForOrigin('https://acme.internal')?->getKey())->toBe($acme->getKey())
-        ->and(app(HostTenantFinder::class)->findForHost('someone-else.internal'))->toBeNull();
+    expect(resolve(HostTenantFinder::class)->findForHost('acme.internal')?->getKey())->toBe($acme->getKey())
+        ->and(resolve(HostTenantFinder::class)->findForAdminHost('acme.internal')?->getKey())->toBe($acme->getKey())
+        ->and(resolve(HostTenantFinder::class)->findForOrigin('https://acme.internal')?->getKey())->toBe($acme->getKey())
+        ->and(resolve(HostTenantFinder::class)->findForHost('someone-else.internal'))->toBeNull();
 });
 
 it('builds a tenant-guarded generated column against the configured foreign key', function (): void {

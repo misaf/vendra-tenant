@@ -13,11 +13,11 @@ use Spatie\Multitenancy\Contracts\IsTenant;
  * application can resolve tenants by subdomain, header, API key or account
  * without `misaf/vendra-store`'s domain tables existing.
  */
-final class StaticHostTenantFinder implements HostTenantFinder
+final readonly class StaticHostTenantFinder implements HostTenantFinder
 {
     public function __construct(
-        private readonly string $host,
-        private readonly IsTenant $tenant,
+        private string $host,
+        private IsTenant $tenant,
     ) {}
 
     public function findForHost(string $host): ?IsTenant

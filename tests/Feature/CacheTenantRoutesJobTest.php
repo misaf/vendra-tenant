@@ -15,13 +15,13 @@ it('caches routes for the given tenant', function (): void {
         ])
         ->andReturn(0);
 
-    (new CacheTenantRoutesJob(7))->handle();
+    new CacheTenantRoutesJob(7)->handle();
 });
 
 it('throws when the route cache command fails', function (): void {
     Artisan::shouldReceive('call')->once()->andReturn(1);
 
-    (new CacheTenantRoutesJob(7))->handle();
+    new CacheTenantRoutesJob(7)->handle();
 })->throws(RuntimeException::class);
 
 it('opts out of tenant-aware job binding', function (): void {

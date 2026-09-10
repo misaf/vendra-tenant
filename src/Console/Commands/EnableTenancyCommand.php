@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Console\Commands;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
+use Illuminate\Support\Arr;
 use Illuminate\Console\Command;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Actions\EnableTenancyAction;
 
+#[Description('Retrofit tenant ownership onto tables migrated before Vendra Tenant was installed')]
+#[Signature('vendra-tenant:enable
+        {tenant : Tenant ID or slug that will own existing unscoped records}
+        {--force : Run without confirmation}')]
 final class EnableTenancyCommand extends Command
 {
-    protected $signature = 'vendra-tenant:enable
-        {tenant : Tenant ID or slug that will own existing unscoped records}
-        {--force : Run without confirmation}';
-
-    protected $description = 'Retrofit tenant ownership onto tables migrated before Vendra Tenant was installed';
-
     public function __construct(
         private readonly EnableTenancyAction $enableTenancyAction,
         private readonly TenantResolver $tenantResolver,
@@ -65,8 +66,8 @@ final class EnableTenancyCommand extends Command
 
         $this->info(sprintf(
             'Enabled tenancy for %d table(s) and assigned %d existing record(s) to tenant [%s].',
-            count($result['tables']),
-            $result['updated_rows'],
+            count(Arr::get($result, 'tables')),
+            Arr::get($result, 'updated_rows'),
             $tenantKey,
         ));
 

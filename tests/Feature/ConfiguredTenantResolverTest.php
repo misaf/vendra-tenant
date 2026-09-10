@@ -54,8 +54,8 @@ it('throws when the tenant cannot be resolved for execution', function (): void 
 });
 
 it('reports itself as the available tenant provider', function (): void {
-    expect(app(TenantResolver::class))->toBeInstanceOf(ConfiguredTenantResolver::class)
-        ->and(app(TenantResolver::class)->available())->toBeTrue();
+    expect(resolve(TenantResolver::class))->toBeInstanceOf(ConfiguredTenantResolver::class)
+        ->and(resolve(TenantResolver::class)->available())->toBeTrue();
 });
 
 it('uses the current tenant domain as the asset origin', function (): void {
