@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Actions\EnableTenancyAction;
+use Misaf\VendraTenant\Support\PendingTenantTables;
 
 #[Description('Retrofit tenant ownership onto tables migrated before Vendra Tenant was installed')]
 #[Signature('vendra-tenant:enable
@@ -19,6 +20,7 @@ final class EnableTenancyCommand extends Command
 {
     public function __construct(
         private readonly EnableTenancyAction $enableTenancyAction,
+        private readonly PendingTenantTables $pendingTables,
         private readonly TenantResolver $tenantResolver,
     ) {
         parent::__construct();
@@ -42,7 +44,7 @@ final class EnableTenancyCommand extends Command
             return self::FAILURE;
         }
 
-        $tables = $this->enableTenancyAction->pendingTables();
+        $tables = $this->pendingTables->list();
 
         if ($tables === []) {
             $this->info('All registered tables are already tenant-aware.');

@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
-use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
+use Misaf\VendraTenant\Support\PendingTenantTables;
 
 /**
  * Retrofits the configured tenant foreign key onto tables that were migrated
@@ -21,23 +21,7 @@ use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
  */
 final readonly class EnableTenancyAction
 {
-    public function __construct(private TenantTableRegistry $tenantTables) {}
-
-    /**
-     * @return list<array{table: string, connection: ?string}>
-     */
-    public function pendingTables(): array
-    {
-        return array_values(array_filter(
-            $this->tenantTables->all(),
-            function (array $definition): bool {
-                $schema = $this->schema(Arr::get($definition, 'connection'));
-
-                return $schema->hasTable(Arr::get($definition, 'table'))
-                    && $this->requiresRetrofit($schema, Arr::get($definition, 'table'));
-            },
-        ));
-    }
+    public function __construct(private PendingTenantTables $pendingTables) {}
 
     /**
      * @return array{tables: list<string>, updated_rows: int}
@@ -48,7 +32,7 @@ final readonly class EnableTenancyAction
         $updatedRows = 0;
         $foreignKey = TenantSchema::column();
 
-        foreach ($this->pendingTables() as $definition) {
+        foreach ($this->pendingTables->list() as $definition) {
             $table = Arr::get($definition, 'table');
             $schema = $this->schema(Arr::get($definition, 'connection'));
             $connection = $this->connection(Arr::get($definition, 'connection'));
@@ -85,10 +69,9 @@ final readonly class EnableTenancyAction
         ];
     }
 
-    private function requiresRetrofit(Builder $schema, string $table): bool
+    private function schema(?string $connection): Builder
     {
-        return ! $schema->hasColumn($table, TenantSchema::column())
-            || $this->tenantColumnIsNullable($schema, $table);
+        return Schema::connection($connection);
     }
 
     private function tenantColumnIsNullable(Builder $schema, string $table): bool
@@ -102,11 +85,6 @@ final readonly class EnableTenancyAction
         }
 
         return false;
-    }
-
-    private function schema(?string $connection): Builder
-    {
-        return Schema::connection($connection);
     }
 
     private function connection(?string $connection): Connection
