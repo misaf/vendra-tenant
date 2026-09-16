@@ -197,6 +197,6 @@ final class ConfiguredTenantResolver implements TenantResolver
      */
     private function hasScope(string $scope): bool
     {
-        return method_exists($this->tenantModelClass(), 'scope'.ucfirst($scope));
+        return $this->newTenantModel()->hasNamedScope($scope);
     }
 }
