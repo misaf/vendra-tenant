@@ -28,8 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Misaf\\VendraTenant\\": "src/",
-            "Misaf\\VendraTenant\\Database\\Seeders\\": "database/seeders/"
+            "Misaf\\VendraTenant\\": "src/"
         }
     },
     "extra": {
