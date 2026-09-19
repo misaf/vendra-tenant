@@ -12,13 +12,7 @@ use RuntimeException;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
 
 /**
- * Regenerates a tenant's route cache off the request lifecycle.
- *
- * Tenant route sets can diverge, so each tenant gets its own cache. Running it
- * on a queue keeps provisioning responsive under load. It targets its tenant
- * explicitly via the `--tenant` option, so it opts out of Spatie's automatic
- * tenant-aware job binding (there is no current tenant when it is dispatched
- * from the console panel).
+ * Not tenant aware, since it passes `--tenant` and is dispatched without a current tenant.
  */
 final class CacheTenantRoutesJob implements NotTenantAware, ShouldQueue
 {

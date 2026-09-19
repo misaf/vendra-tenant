@@ -13,17 +13,7 @@ use Misaf\VendraTenant\Contracts\TenantContract;
 use RuntimeException;
 
 /**
- * The tenant resolver every tenant-agnostic package talks to.
- *
- * It knows no concrete model: both the class and the foreign key come from
- * `config/vendra-tenant.php`, so the same engine drives `Store`/`tenant_id`
- * here and `Company`/`company_id` in another application.
- *
- * It knows no concrete *columns* either. Every query below asks the model how it
- * names its own primary key (Eloquent's `getKeyName()`) and its slug
- * ({@see TenantContract::getTenantSlugName()}), so a tenant keyed by
- * `company_id`/`code` resolves through exactly the same code as Vendra's Store
- * on `id`/`slug`.
+ * Column names always come from the model, never assumed.
  */
 final class ConfiguredTenantResolver implements TenantResolver
 {
@@ -140,9 +130,7 @@ final class ConfiguredTenantResolver implements TenantResolver
     }
 
     /**
-     * The configured tenant model, validated once at the point of use so a
-     * misconfiguration reads as a configuration error rather than a fatal on
-     * some unrelated static call.
+     * Get the configured tenant model, failing clearly when it is misconfigured.
      *
      * @return class-string<Model&TenantContract>
      */
@@ -170,9 +158,7 @@ final class ConfiguredTenantResolver implements TenantResolver
     }
 
     /**
-     * A throwaway instance, used only to ask the model how it names its own
-     * columns. Both answers come from the model rather than from configuration,
-     * because the model is the source of truth for its own schema.
+     * Create a throwaway instance to read the model's column names.
      */
     private function newTenantModel(): Model&TenantContract
     {
@@ -181,20 +167,11 @@ final class ConfiguredTenantResolver implements TenantResolver
         return new $modelClass;
     }
 
-    /**
-     * The column holding the tenant slug — `slug` for Vendra's Store, whatever
-     * the model says elsewhere.
-     */
     private function tenantSlugName(): string
     {
         return $this->newTenantModel()->getTenantSlugName();
     }
 
-    /**
-     * Business availability ("may this tenant currently serve requests?") lives
-     * on the concrete model, so the engine uses the scope when the application
-     * defines one and lists every tenant when it does not.
-     */
     private function hasScope(string $scope): bool
     {
         return $this->newTenantModel()->hasNamedScope($scope);

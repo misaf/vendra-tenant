@@ -8,10 +8,7 @@ use Misaf\VendraTenant\Contracts\HostTenantFinder;
 use Spatie\Multitenancy\Contracts\IsTenant;
 
 /**
- * A host finder that resolves nothing from domains at all — it maps a fixed host
- * to a fixed tenant. Its only job is to prove the port really is a port: an
- * application can resolve tenants by subdomain, header, API key or account
- * without `misaf/vendra-store`'s domain tables existing.
+ * Map a fixed host to a fixed tenant, without `misaf/vendra-store`'s domain tables.
  */
 final readonly class StaticHostTenantFinder implements HostTenantFinder
 {

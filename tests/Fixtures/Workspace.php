@@ -14,20 +14,9 @@ use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 
 /**
- * A tenant model this engine has never heard of.
+ * A tenant owning `workspace_id` rows, keyed by `uuid` and slugged by `handle`.
  *
- * The suite drives the engine through a `Workspace` owning `workspace_id`
- * columns rather than through Vendra's own Store, which is the point: if the
- * tests pass against a model with a different name, a different table and a
- * different foreign key, nothing ecommerce-specific has leaked back into
- * `misaf/vendra-tenant`.
- *
- * Its columns are deliberately hostile to the engine's old assumptions: the
- * primary key is `uuid` and the slug is `handle`. (The key still *holds* an
- * integer — `TenantContract::getTenantKey()` returns `int` and the generic
- * tenant foreign key is an integer column, both of which are settled
- * architecture. Only the column *name* varies here, which is what the resolver
- * had been hard-coding.)
+ * Proves nothing store-specific leaked into `misaf/vendra-tenant`.
  *
  * @property int $uuid
  * @property string $name

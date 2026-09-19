@@ -12,9 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Misaf\VendraSupport\Tenancy\BelongsToTenant;
 
 /**
- * A tenant-scoped record owned through `workspace_id`, so the suite proves the
- * scoping mechanism reads its foreign key from configuration instead of
- * assuming `tenant_id`.
+ * A record owned through a configured `workspace_id` foreign key.
  *
  * @property int $id
  * @property int $workspace_id

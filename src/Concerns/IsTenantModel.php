@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace Misaf\VendraTenant\Concerns;
 
-use Misaf\VendraTenant\Contracts\TenantContract;
-
 /**
- * Default {@see TenantContract} implementation for
- * a model that stores a `name` and a `slug`.
- *
- * A tenant model that names its slug column differently overrides only
- * {@see getTenantSlugName()} — the accessor and every query the engine builds
- * follow from it. The primary key needs no override at all: Eloquent's own
- * `getKeyName()` already reports it.
+ * Override {@see getTenantSlugName()} if the slug column has another name.
  */
 trait IsTenantModel
 {
@@ -50,14 +42,9 @@ trait IsTenantModel
     }
 
     /**
-     * A string attribute the tenant may simply not have.
+     * Get an optional string attribute, treating a blank or missing one as null.
      *
-     * Blank and absent both read as null, so a model without the column, and
-     * one whose column is empty, both mean "no opinion, keep the platform's".
-     * The existence check is not defensive padding: under
-     * `preventAccessingMissingAttributes()` reading a column a tenant model
-     * never declared throws, and a `Company` or `Workspace` that has no locale
-     * is the normal case this trait exists to serve.
+     * The existence check avoids `preventAccessingMissingAttributes()` exceptions.
      */
     private function tenantOptionalStringAttribute(string $attribute): ?string
     {

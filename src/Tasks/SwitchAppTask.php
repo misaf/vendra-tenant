@@ -13,10 +13,7 @@ use Spatie\Multitenancy\Tasks\SwitchTenantTask;
 final readonly class SwitchAppTask implements SwitchTenantTask
 {
     /**
-     * The locale and timezone a tenant that states no preference of its own
-     * runs under. Vendra's fleet is Iranian, so these are the fleet's defaults
-     * rather than the framework's — a tenant that sets `locale`/`timezone`
-     * overrides them.
+     * The fleet's default locale and timezone, for tenants without their own.
      */
     private const string FALLBACK_LOCALE = 'fa';
 

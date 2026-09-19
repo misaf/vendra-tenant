@@ -10,12 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
 
-/**
- * The read side of the tenancy retrofit: which registered tables still need
- * the tenant column. A plain query object rather than an action — it records
- * nothing and decides nothing, so callers reach it directly instead of going
- * through a pass-through action.
- */
 final readonly class PendingTenantTables
 {
     public function __construct(private TenantTableRegistry $tenantTables) {}

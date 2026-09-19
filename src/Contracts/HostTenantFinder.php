@@ -8,13 +8,7 @@ use Misaf\VendraTenant\Support\NullHostTenantFinder;
 use Spatie\Multitenancy\Contracts\IsTenant;
 
 /**
- * The port through which the engine turns a request host into a tenant.
- *
- * How a host maps to a tenant is business knowledge — Vendra ecommerce resolves
- * it from the store's own domains — so the engine depends on this interface and
- * the concrete application binds the adapter. Without a binding the engine falls
- * back to {@see NullHostTenantFinder} and simply
- * resolves nothing.
+ * Applications bind an adapter; {@see NullHostTenantFinder} resolves nothing.
  */
 interface HostTenantFinder
 {
@@ -28,8 +22,5 @@ interface HostTenantFinder
      */
     public function findForAdminHost(string $host): ?IsTenant;
 
-    /**
-     * Resolve a tenant from a browser origin such as "https://shop.test".
-     */
     public function findForOrigin(string $origin): ?IsTenant;
 }

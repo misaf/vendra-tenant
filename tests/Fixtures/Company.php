@@ -12,14 +12,7 @@ use Misaf\VendraTenant\Contracts\TenantContract;
 use Spatie\Multitenancy\Models\Tenant as SpatieTenant;
 
 /**
- * A second, unrelated ecosystem's tenant.
- *
- * `Company` holds two rules at once. The concrete tenant model's *name* and the
- * generic ownership *column* are independent: companies own `generic_documents`
- * through the neutral `tenant_id`, exactly as Vendra's Store owns `products`.
- * And the tenant's *own* columns are its business, not the engine's — this one
- * is keyed by `company_id` and slugged by `code`, neither of which the resolver
- * is allowed to assume.
+ * A tenant keyed by `company_id` and slugged by `code`, owning rows through `tenant_id`.
  *
  * @property int $company_id
  * @property string $name

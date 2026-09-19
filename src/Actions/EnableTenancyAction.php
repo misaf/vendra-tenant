@@ -14,10 +14,7 @@ use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraTenant\Support\PendingTenantTables;
 
 /**
- * Retrofits the configured tenant foreign key onto tables that were migrated
- * before a tenant provider was installed. The column name is read from
- * {@see TenantSchema}, never assumed, so the same command retrofits `tenant_id`
- * here and `company_id` in a Company-tenanted application.
+ * Add the tenant foreign key to tables migrated before tenancy was installed.
  */
 final readonly class EnableTenancyAction
 {
