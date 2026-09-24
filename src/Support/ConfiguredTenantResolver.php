@@ -73,6 +73,12 @@ final class ConfiguredTenantResolver implements TenantResolver
         return true;
     }
 
+    /**
+     * @template TReturn
+     *
+     * @param  Closure(): TReturn  $callback
+     * @return TReturn
+     */
     public function execute(Model|int|string $tenant, Closure $callback): mixed
     {
         if (is_int($tenant) || is_string($tenant)) {
@@ -88,10 +94,8 @@ final class ConfiguredTenantResolver implements TenantResolver
     {
         $this->query()
             ->cursor()
-            ->each(function (Model $tenant) use ($callback): void {
-                if ($tenant instanceof TenantContract) {
-                    $tenant->execute($callback);
-                }
+            ->each(function (TenantContract $tenant) use ($callback): void {
+                $tenant->execute($callback);
             });
     }
 
@@ -122,9 +126,7 @@ final class ConfiguredTenantResolver implements TenantResolver
         $options = [];
 
         foreach ($query->limit($limit)->get() as $tenant) {
-            if ($tenant instanceof TenantContract) {
-                $options[$tenant->getTenantKey()] = $tenant->getTenantSlug();
-            }
+            $options[$tenant->getTenantKey()] = $tenant->getTenantSlug();
         }
 
         return $options;
@@ -151,7 +153,7 @@ final class ConfiguredTenantResolver implements TenantResolver
     }
 
     /**
-     * @return Builder<Model>
+     * @return Builder<Model&TenantContract>
      */
     private function query(): Builder
     {

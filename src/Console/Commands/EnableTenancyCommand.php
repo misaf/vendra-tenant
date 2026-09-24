@@ -7,7 +7,6 @@ namespace Misaf\VendraTenant\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 use Misaf\VendraSupport\Contracts\TenantResolver;
 use Misaf\VendraTenant\Actions\EnableTenancyAction;
 use Misaf\VendraTenant\Support\PendingTenantTables;
@@ -64,12 +63,12 @@ final class EnableTenancyCommand extends Command
             return self::FAILURE;
         }
 
-        $result = $this->enableTenancyAction->execute((int) $tenantKey);
+        ['tables' => $tables, 'updated_rows' => $updatedRows] = $this->enableTenancyAction->execute((int) $tenantKey);
 
         $this->info(sprintf(
             'Enabled tenancy for %d table(s) and assigned %d existing record(s) to tenant [%s].',
-            count(Arr::get($result, 'tables')),
-            Arr::get($result, 'updated_rows'),
+            count($tables),
+            $updatedRows,
             $tenantKey,
         ));
 

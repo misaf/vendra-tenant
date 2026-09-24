@@ -7,7 +7,6 @@ namespace Misaf\VendraTenant\Actions;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Schema\Builder;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
@@ -29,10 +28,9 @@ final readonly class EnableTenancyAction
         $updatedRows = 0;
         $foreignKey = TenantSchema::column();
 
-        foreach ($this->pendingTables->list() as $definition) {
-            $table = Arr::get($definition, 'table');
-            $schema = $this->schema(Arr::get($definition, 'connection'));
-            $connection = $this->connection(Arr::get($definition, 'connection'));
+        foreach ($this->pendingTables->list() as ['table' => $table, 'connection' => $connectionName]) {
+            $schema = $this->schema($connectionName);
+            $connection = $this->connection($connectionName);
 
             if (! $schema->hasColumn($table, $foreignKey)) {
                 $schema->table($table, function (Blueprint $blueprint) use ($foreignKey): void {
@@ -75,9 +73,9 @@ final readonly class EnableTenancyAction
     {
         $foreignKey = TenantSchema::column();
 
-        foreach ($schema->getColumns($table) as $column) {
-            if ($foreignKey === Arr::get($column, 'name')) {
-                return Arr::get($column, 'nullable');
+        foreach ($schema->getColumns($table) as ['name' => $name, 'nullable' => $nullable]) {
+            if ($name === $foreignKey) {
+                return $nullable;
             }
         }
 

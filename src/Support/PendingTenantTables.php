@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Misaf\VendraTenant\Support;
 
 use Illuminate\Database\Schema\Builder;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use Misaf\VendraSupport\Tenancy\TenantSchema;
 use Misaf\VendraSupport\Tenancy\TenantTableRegistry;
@@ -19,15 +18,18 @@ final readonly class PendingTenantTables
      */
     public function list(): array
     {
-        return array_values(array_filter(
-            $this->tenantTables->all(),
-            function (array $definition): bool {
-                $schema = $this->schema(Arr::get($definition, 'connection'));
+        $pending = [];
 
-                return $schema->hasTable(Arr::get($definition, 'table'))
-                    && $this->requiresRetrofit($schema, Arr::get($definition, 'table'));
-            },
-        ));
+        foreach ($this->tenantTables->all() as $definition) {
+            ['table' => $table, 'connection' => $connection] = $definition;
+            $schema = $this->schema($connection);
+
+            if ($schema->hasTable($table) && $this->requiresRetrofit($schema, $table)) {
+                $pending[] = $definition;
+            }
+        }
+
+        return $pending;
     }
 
     private function requiresRetrofit(Builder $schema, string $table): bool
@@ -40,9 +42,9 @@ final readonly class PendingTenantTables
     {
         $foreignKey = TenantSchema::column();
 
-        foreach ($schema->getColumns($table) as $column) {
-            if ($foreignKey === Arr::get($column, 'name')) {
-                return Arr::get($column, 'nullable');
+        foreach ($schema->getColumns($table) as ['name' => $name, 'nullable' => $nullable]) {
+            if ($name === $foreignKey) {
+                return $nullable;
             }
         }
 
