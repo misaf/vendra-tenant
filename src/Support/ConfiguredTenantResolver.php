@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Misaf\VendraSupport\Contracts\TenantResolver;
+use Misaf\VendraSupport\Support\ContainsSearch;
 use Misaf\VendraTenant\Contracts\TenantContract;
 use RuntimeException;
 
@@ -115,7 +116,7 @@ final class ConfiguredTenantResolver implements TenantResolver
         }
 
         if ($search !== '') {
-            $query->where($slugName, 'like', "%{$search}%");
+            ContainsSearch::apply($query, [$slugName], $search);
         }
 
         $options = [];

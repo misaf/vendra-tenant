@@ -145,6 +145,7 @@ it('builds search options from the model-declared key and slug columns', functio
 
     expect($resolver->searchOptions(''))->toBe([$acme->getTenantKey() => 'acme'])
         ->and($resolver->searchOptions('acm'))->toBe([$acme->getTenantKey() => 'acme'])
+        ->and($resolver->searchOptions('a_me'))->toBeEmpty()
         ->and($resolver->searchOptions('zzz'))->toBeEmpty();
 })->with('tenant column namings');
 
