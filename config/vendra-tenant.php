@@ -17,7 +17,8 @@ return [
     'foreign_key' => 'tenant_id',
 
     /*
-     * The platform host; tenant admin panels live at `<slug>.admin.<central host>`.
+     * The platform's own host. Hosts beneath it belong to the platform rather
+     * than to a tenant, such as tenant admin panels at `<slug>.admin.<central host>`.
      */
     'central_host' => Uri::of((string) env('APP_URL', 'http://localhost'))->host(),
 ];

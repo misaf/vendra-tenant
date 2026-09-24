@@ -80,3 +80,20 @@ it('uses the current tenant domain as the asset origin', function (): void {
     expect(asset('css/filament/filament/app.css'))->toBe('https://vendra.test/css/filament/filament/app.css')
         ->and(Storage::disk('public')->url('fonts/inter.woff2'))->toBe('/storage/fonts/inter.woff2');
 });
+
+it('restores an unset asset url after leaving a tenant', function (): void {
+    Config::set('app.url', 'https://vendra.test');
+    Config::set('app.asset_url');
+
+    $this->app->instance('request', Request::create('https://seomasters.test/reseller'));
+
+    $task = new SwitchAppTask;
+    $task->makeCurrent(currentWorkspace());
+
+    expect(config('app.asset_url'))->toBe('https://seomasters.test');
+
+    $task->forgetCurrent();
+
+    expect(config('app.asset_url'))->toBeNull()
+        ->and(asset('css/filament/filament/app.css'))->toBe('https://vendra.test/css/filament/filament/app.css');
+});

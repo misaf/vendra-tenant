@@ -161,7 +161,7 @@ it('establishes the current tenant through the generic resolver', function (
 
     expect($resolver->current())->toBeNull();
 
-    // By model, by key, and by slug — all three entry points.
+    // Make the tenant current by model, by key, and by slug.
     expect($resolver->makeCurrent($acme))->toBeTrue()
         ->and($resolver->currentId())->toBe($acme->getTenantKey());
 

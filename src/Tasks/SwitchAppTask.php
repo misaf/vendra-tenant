@@ -29,7 +29,7 @@ final readonly class SwitchAppTask implements SwitchTenantTask
 
     private string $originalUrl;
 
-    private string $originalAssetUrl;
+    private ?string $originalAssetUrl;
 
     public function __construct()
     {
@@ -38,7 +38,8 @@ final readonly class SwitchAppTask implements SwitchTenantTask
         $this->originalProgressBarColor = Config::string('livewire.navigate.progress_bar_color');
         $this->originalTimezone = Config::string('app.timezone');
         $this->originalUrl = Config::string('app.url');
-        $this->originalAssetUrl = Config::string('app.asset_url');
+        $assetUrl = Config::get('app.asset_url');
+        $this->originalAssetUrl = is_string($assetUrl) ? $assetUrl : null;
     }
 
     public function forgetCurrent(): void
