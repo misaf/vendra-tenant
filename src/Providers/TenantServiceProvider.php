@@ -27,7 +27,7 @@ final class TenantServiceProvider extends PackageServiceProvider
         $package
             ->name('vendra-tenant')
             ->hasConfigFile()
-            ->hasCommand(EnableTenancyCommand::class)
+            ->hasConsoleCommand(EnableTenancyCommand::class)
             ->hasRoute('web')
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-tenant');
